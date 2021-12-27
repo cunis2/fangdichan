@@ -43,5 +43,9 @@ public class LoginController {
         }
         return "error";
     }
-
+    @RequestMapping("/exit")
+    public String exit(HttpSession session){
+        session.removeAttribute("user");
+        return"login";
+    }
 }

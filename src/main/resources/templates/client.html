@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>客户管理系统</title>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <script src="/jquery/jquery-3.5.1.js"></script>
+    <script src="/area.js"></script>
+</head>
+<script>
+    $(document).ready(function() {
+        $("#addClient").click(function () {    //添加客户
+
+            var result = {
+                cid: 0,
+                name: "",
+                telephone: "",
+                qq: "",
+                email: "",
+                unit1: "",
+                unit2: "",
+                unit3: ""
+            }
+            layer.open({
+                type: 1,
+                area: ['500px', '600px'],
+                title: '添加客户资料',
+                content: $("#test"),
+                shade: 0,
+                btn: ['提交', '重置']
+                , btn1: function (index, layero) {
+                    result.name = $("#name").val();
+                    result.telephone = $("#phone").val();
+                    result.qq = $("#qq").val();
+                    result.email = $("#email").val();
+
+                    var value1 = $("#unit1").val();
+                    var d1 = value1.split('_');  //去掉_下划线,得到分割后的数据
+                    result.unit1 = areaData[d1[2]].provinceName      //省级或直辖市
+
+                    var value2 = $("#unit2").val();
+                    var d2 = value2.split('_');  //去掉_下划线,得到分割后的数据
+                    result.unit2 = area1Data[d2[2]].cityName          //市级及直辖市
+
+                    var value3 = $("#unit3").val();
+                    var d3 = value3.split('_');  //去掉_下划线,得到分割后的数据
+                    result.unit3 = area2Data[d3[2]].areaName         //县级
+                    $.ajax({
+                        type: "post",
+                        url: "addClient",
+                        dataType: "text",
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify(result),
+                        success: function (result) {
+                            if (result === "successful")
+                                alert("添加成功");
+                            else
+                                alert("添加失败")
+                        },
+                        error: function (data, XMLHttpRequest, textStatus, errorThrown) {
+                            alert(data);
+                            alert(XMLHttpRequest.status);
+                            alert(XMLHttpRequest.readyState);
+                            alert(textStatus);
+                        }
+                    });
+                    layer.closeAll();
+                },
+                btn2: function (index, layero) {
+                    alert("2222");
+                    return false;
+                },
+                cancel: function (layero, index) {
+                    layer.closeAll();
+                }
+
+            });
+
+
+        });
+
+
+       $("#selectAll").click(function () {//三级查询
+           var pre={
+               unit1:"",
+               unit2:"",
+               unit3:""
+           }
+          var valueA=$("#a").val()
+           var d1 = valueA.split('_');  //去掉_下划线,得到分割后的数据
+           pre.unit1=areaData[d1[2]].provinceName;
+           var valueB=$("#b").val()
+           var d2 = valueB.split('_');  //去掉_下划线,得到分割后的数据
+           pre.unit2=area1Data[d2[2]].cityName;
+           var valueC=$("#c").val()
+           var d3 = valueC.split('_');  //去掉_下划线,得到分割后的数据
+           pre.unit3=area2Data[d3[2]].areaName;
+           console.log(pre)
+           $.ajax({
+               type: "post",
+               url: "/selectClients",
+               dataType: "text",
+               contentType: "application/json; charset=utf-8",
+               data: JSON.stringify(pre),                          //前端三级级联查询对象
+               success: function (result) {
+                   var data=JSON.parse(result)      //转成对象
+                   add(data)
+               }
+           });
+
+           function add(data) {
+               var m={
+                   cid: 0,
+                   name: "",
+                   telephone: "",
+                   qq: "",
+                   email: "",
+                   unit1: "",
+                   unit2: "",
+                   unit3: ""
+               }
+               $("#showTable").find("tr").remove()//清空原有表格数据
+               for (var item in data) {
+                   m = data[item];
+                   const trHTML = "<tr><td>" + m.cid + "</td><td>" + m.name + "</td><td>" + m.telephone + "</td><td>" + m.qq + "</td><td>" + m.email + "</td><td>" + m.unit1 + "</td><td>" + m.unit2 + "</td><td>" + m.unit3 + "</td><td><button class=\"layui-btn layui-btn-primary layui-border-red\"  onclick='delTr(this)'>删除</button></td><tr/>";
+                   $("#showTable").append(trHTML); //把trHTML的元素插入到id为showTable里头
+                   console.log(m)
+               }
+           }
+
+       })
+
+        $("#showAllClient").click(function () {   //刷新客户表
+            $.ajax({
+                url: "/form3", //获取数据列
+                type: 'GET',
+                success: function (data) {
+                    add(data)
+                }
+            });
+
+            function add(data) {
+                var m = {       //客户实体类
+                    cid: 0,
+                    name: "",
+                    telephone: "",
+                    qq: "",
+                    email: "",
+                    unit1: "",
+                    unit2: "",
+                    unit3: ""
+                }
+                $("#showTable").find("tr").remove()//清空原有表格数据
+                for (var item in data) {
+                    m = data[item];
+                    const trHTML = "<tr><td>" + m.cid + "</td><td>" + m.name + "</td><td>" + m.telephone + "</td><td>" + m.qq + "</td><td>" + m.email + "</td><td>" + m.unit1 + "</td><td>" + m.unit2 + "</td><td>" + m.unit3 + "</td><td><button class=\"layui-btn layui-btn-primary layui-border-red\"  onclick='delTr(this)'>删除</button></td><tr/>";
+                    $("#showTable").append(trHTML); //把trHTML的元素插入到id为showTable里头
+                    console.log(m)
+                }
+
+            }
+
+
+        });
+
+    });
+</script>
+<button id="showAllClient" class="layui-btn">查看全部客户</button>
+<button id="addClient" class="layui-btn">录入客户信息</button>
+<form class="layui-form">
+<div class="layui-form-item">
+    <label class="layui-form-label">选择地区</label>
+    <div class="layui-input-inline">
+        <select id="a" name="province" lay-filter="province">
+            <option value="">请选择省</option>
+        </select>
+    </div>
+    <div class="layui-input-inline" style="display: none;">
+        <select id="b" name="city" lay-filter="city">
+            <option value="">请选择市</option>
+        </select>
+    </div>
+    <div class="layui-input-inline" style="display: none;">
+        <select id="c" name="area" lay-filter="area">
+            <option value="">请选择县/区</option>
+        </select>
+    </div>
+</div>
+
+</form>
+<button id="selectAll" class="layui-btn">查询</button>
+<table class="layui-table">
+    <tr>
+        <td>客户号</td>
+        <td>客户姓名</td>
+        <td>联系电话</td>
+        <td>QQ</td>
+        <td>邮件</td>
+        <td>一级单位</td>
+        <td>二级单位</td>
+        <td>三级单位</td>
+        <td>操作</td>
+    </tr>
+    <tbody id="showTable" >
+    <tr>
+        <td>1</td>
+        <td>刘伟</td>
+        <td>187</td>
+        <td>2627</td>
+        <td>@qq.com</td>
+        <td>重庆市</td>
+        <td>重庆交通大学</td>
+        <td>四班</td>
+        <td>
+            <button class="layui-btn layui-btn-primary layui-border-red" >删除</button>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<form id="test" class="layui-form" style="display: none">
+    <div class="layui-form-item">
+        <label class="layui-form-label">姓名</label>
+        <div class="layui-input-block">
+            <input id="name" type="text" lay-verify="require" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">联系电话</label>
+        <div class="layui-input-block">
+            <input id="phone" type="text" lay-verify="require" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">QQ</label>
+        <div class="layui-input-block">
+            <input id="qq" type="text" lay-verify="require" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">邮件</label>
+        <div class="layui-input-block">
+            <input id="email" type="text" lay-verify="require" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">选择地区</label>
+        <div class="layui-input-inline">
+            <select id="unit1" name="province" lay-filter="province">
+                <option value="">请选择省</option>
+            </select>
+        </div>
+        <div class="layui-input-inline" style="display: none;">
+            <select id="unit2" name="city" lay-filter="city">
+                <option value="">请选择市</option>
+            </select>
+        </div>
+        <div class="layui-input-inline" style="display: none;">
+            <select id="unit3" name="area" lay-filter="area">
+                <option value="">请选择县/区</option>
+            </select>
+        </div>
+    </div>
+</form>
+
+<script src="/layui/layui.js"></script>
+<script>
+    //初始数据
+    var areaData = Area;
+    var area1Data;
+    var area2Data;
+    var $form;
+    var form;
+    var $;
+    layui.use(['jquery', 'form'], function() {
+        $ = layui.jquery;
+        form = layui.form;
+        $form = $('form');
+        loadProvince();
+    });
+    //加载省数据
+    function loadProvince() {
+        var proHtml = '';
+        for (var i = 0; i < areaData.length; i++) {
+            proHtml += '<option  value="' + areaData[i].provinceCode + '_' + areaData[i].mallCityList.length + '_' + i + '">' + areaData[i].provinceName + '</option>';
+        }
+        //初始化省数据
+        $form.find('select[name=province]').append(proHtml);
+        form.render();
+        form.on('select(province)', function(data) {
+            $form.find('select[name=area]').html('<option value="">请选择县/区</option>').parent().hide();
+            var value = data.value;
+            var d = value.split('_');  //去掉_下划线,得到分割后的数据
+            var code = d[0];
+            var count = d[1];
+            var index = d[2];
+            if (count > 0) {
+                loadCity(areaData[index].mallCityList);
+            } else {
+                $form.find('select[name=city]').parent().hide();
+            }
+        });
+    }
+    //加载市数据
+    function loadCity(citys) {
+        area1Data=citys;
+        var cityHtml = '';
+        for (var i = 0; i < citys.length; i++) {
+            cityHtml += '<option value="' + citys[i].cityCode + '_' + citys[i].mallAreaList.length + '_' + i + '">' + citys[i].cityName + '</option>';
+        }
+        $form.find('select[name=city]').html(cityHtml).parent().show();
+        form.render();
+        form.on('select(city)', function(data) {
+            var value = data.value;
+            var d = value.split('_');
+            var code = d[0];
+            var count = d[1];
+            var index = d[2];
+            if (count > 0) {
+                loadArea(citys[index].mallAreaList);
+            } else {
+                $form.find('select[name=area]').parent().hide();
+            }
+        });
+    }
+    //加载县/区数据
+    function loadArea(areas) {
+        area2Data=areas;
+        var areaHtml = '';
+        for (var i = 0; i < areas.length; i++) {
+            areaHtml += '<option value="' + areas[i].areaCode + '_' + areas.length + '_' + i + '">' + areas[i].areaName + '</option>';
+        }
+        $form.find('select[name=area]').html(areaHtml).parent().show();
+        form.render();
+        form.on('select(area)', function(data) {
+            //console.log(data);
+        });
+    }
+
+
+    function delTr($this){
+        $($this).parent().parent().remove();
+        var m=$($this).parent().parent().find("td").eq(0).text(); //把当前行的第0个属性值得到，即客户编号
+
+        console.log(m)
+        $.ajax({
+            type: "post",
+            url: "/deleteClient",
+            dataType: "text",
+            contentType: "application/text; charset=utf-8",
+            data: m,            //m客户号
+            success:function(result){
+                if(result==="successful")
+                    alert("删除成功")
+                else
+                    alert("删除失败"+result)
+            },
+            error:function(data, XMLHttpRequest, textStatus, errorThrown){
+                alert(data);
+                alert(XMLHttpRequest.status);
+                alert(XMLHttpRequest.readyState);
+                alert(textStatus);
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
