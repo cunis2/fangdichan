@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.ruanjian.mapper.EmployeeMapper">
+    <select id="selectall" resultType="com.example.ruanjian.beans.EmployeeBean">
+        select *from employee
+    </select>
+    <select id="selectByname" parameterType="com.example.ruanjian.beans.EmployeeBean" resultType="com.example.ruanjian.beans.EmployeeBean">
+        select *from employee where name=#{name }
+    </select>
+    <select id="selectBydepartment"   resultType="com.example.ruanjian.beans.EmployeeBean">
+        select *from employee where department=#{department}
+    </select>
+    <update id="updateByid" parameterType="com.example.ruanjian.beans.EmployeeBean" >
+        update employee set password=#{password },name=#{name },duty=#{duty },department=#{department },type=#{type },Bmoney=#{bMoney},evaluate=#{evaluate } where eid=#{eid}
+    </update>
+    <delete id="delete">
+        delete from employee where eid=#{eid}
+    </delete>
+    <insert id="insert" parameterType="com.example.ruanjian.beans.EmployeeBean">
+        insert into employee value (#{eid},#{password},#{name},#{duty},#{department },#{type},#{bMoney},#{evaluate})
+    </insert>
+    <select id="selectByid" resultType="com.example.ruanjian.beans.EmployeeBean">
+        select * from employee where eid =#{id}
+    </select>
+</mapper>

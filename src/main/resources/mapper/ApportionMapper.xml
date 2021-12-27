@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.ruanjian.mapper.ApportionMapper">
+    <select id="selectBypid" resultType="com.example.ruanjian.beans.Apportion">
+        select *from apportion where pid=#{pid}
+    </select>
+    <update id="update" parameterType="com.example.ruanjian.beans.Apportion">
+        update apportion set Mstate = #{mState},Astate= #{aState},Lstate= #{lState} where pid=#{pId}
+    </update>
+    <select id="selectallm" resultType="com.example.ruanjian.beans.Apportion">
+        select * from apportion where Mstate="未分配"
+    </select>
+    <select id="selectalla" resultType="com.example.ruanjian.beans.Apportion">
+        select * from apportion where Astate="未分配"
+    </select>
+    <select id="selectalll" resultType="com.example.ruanjian.beans.Apportion">
+        select * from apportion where Lstate="未分配"
+    </select>
+    <insert id="insert" parameterType="com.example.ruanjian.beans.Apportion">
+        insert into apportion (pid,Mstate,Astate,Lstate) values (#{pId},#{mState},#{aState},#{lState})
+    </insert>
+</mapper>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.ruanjian.mapper.ProjectMapper">
+    <select id="queryProjectList" resultMap="bean">
+        select *from project
+    </select>
+    <resultMap id="bean" type="com.example.ruanjian.beans.ProjectBean">
+        <id property="pId" column="pid"/>
+        <result property="pName" column="pname"/>
+        <result property="cId" column="cid"/>
+        <result property="dataUrl" column="data_url"/>
+        <result property="state" column="state"/>
+        <result property="price" column="price"/>
+        <result property="mPrinciple" column="Mprincipal"/>
+        <result property="aPrinciple" column="Aprincipal"/>
+        <result property="lPrinciple" column="Lprincipal"/>
+        <result property="bTime" column="Btime"/>
+        <result property="eTime" column="Etime"/>
+        <result property="type" column="type"/>
+    </resultMap>
+    <insert id="insertProject" parameterType="com.example.ruanjian.beans.ProjectBean">
+        insert into project values (#{pName},#{pId},#{cId},#{dataUrl},#{state},#{price},#{mPrinciple},#{aPrinciple},#{lPrinciple},#{bTime},#{eTime},#{type});
+    </insert>
+    <delete id="deleteProjectByPid" parameterType="com.example.ruanjian.beans.ProjectBean">
+        delete from project where pid=#{pId};
+    </delete>
+    <select id="selectProjectByPid" resultMap="bean">
+        select * from project where pid=#{pId}
+    </select>
+    <select id="selectByname" resultMap="bean">
+        select *from project where pname=#{pName}
+    </select>
+    <update id="updateProject" parameterType="com.example.ruanjian.beans.ProjectBean">
+        update project set pname=#{PName},cid=#{cId},data_url=#{dataUrl},state=#{state},price=#{price},Mprincipal=#{mPrincipal},Aprincipal=#{aPrinciple},Lprincipal=#{lPrinciple},Btime=#{bTime},Etime=#{eTime},type=#{type} where pid=#{pId};
+    </update>
+    <select id="selectByUrl" resultMap="bean">
+        select *from project where data_url=#{dataUrl}
+    </select>
+</mapper>

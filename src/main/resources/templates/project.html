@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <title>项目管理系统</title>
+  <link rel="stylesheet" href="/layui/css/layui.css" media="all">
+  <script src="/jquery/jquery-3.5.1.js"></script>
+  <script>
+    $(document).ready(function(){
+      $("#newReceive").click(function() {   //新收到项目
+        $.ajax({
+          url: "/selectstate", //获取数据列
+          type: 'GET',
+          success: function (data) {
+            add(data)
+          }
+        });
+
+        function add(data) {
+          var m={
+            pName:"",
+            pId:0,
+            cId:0,
+            dataUrl:"",
+            state:"",
+            price:0,
+            mPrinciple:"",
+            aPrinciple:"",
+            lPrinciple:"",
+            bTime:"",
+            eTime:"",
+            type:""
+          }
+          $("#showTable").find("tr").remove()//清空原有表格数据
+          for(var item in data){
+            var list_item=data[item];
+            m=list_item;
+            var flag;
+            flag=0
+            var trHTML="<tr><td>"+m.pName+"</td><td>"+m.pId+"</td><td>"+m.cId+"</td><td>"+m.dataUrl+"</td><td>"+m.state+"</td><td>"+m.price+"</td><td>"+m.mPrinciple+"</td><td>"+m.aPrinciple+"</td><td>"+m.lPrinciple+"</td><td>"+m.bTime+"</td><td>"+m.eTime+"</td><td>"+m.type+"</td><td><div><div><label>未派发</label></div><progress value= '"+flag+"'  max= '100' ></progress></div>" +
+                    "</td><td><button onclick='acceptPro(this)' class=\"layui-btn\">接受</button><button onclick='refusePro(this)' class=\"layui-btn layui-btn-primary layui-border-red\">拒绝</button></td><tr/>";
+            $("#showTable").append(trHTML); //把trHTML的元素插入到id为showTable里头
+            console.log(m)
+          }
+        }
+      });
+
+      $("#receive").click(function () {//收到的项目
+        $.ajax({
+          url:"/selectmyproject", //获取我的项目
+          type:'GET',
+          success:function (data) {
+            add(data)
+          }
+        });
+        function add(data) {
+          var m={
+            pName:"",
+            pId:0,
+            cId:0,
+            dataUrl:"",
+            state:"",
+            price:0,
+            mPrinciple:"",
+            aPrinciple:"",
+            lPrinciple:"",
+            bTime:"",
+            eTime:"",
+            type:""
+          }
+          $("#showTable").find("tr").remove()//清空原有表格数据
+          for(var item in data){
+            var list_item=data[item];
+            m=list_item;
+            var flag;
+            if (m.state==="建模中")
+              flag=30
+            else if (m.state==="渲染中")
+              flag=60
+            else if (m.state==="后期中")
+              flag=90
+            else if (m.state==="已完成")
+              flag=100
+            else
+              flag=0
+            var trHTML="<tr><td>"+m.pName+"</td><td>"+m.pId+"</td><td>"+m.cId+"</td><td>"+m.dataUrl+"</td><td>"+m.state+"</td><td>"+m.price+"</td><td>"+m.mPrinciple+"</td><td>"+m.aPrinciple+"</td><td>"+m.lPrinciple+"</td><td>"+m.bTime+"</td><td>"+m.eTime+"</td><td>"+m.type+"</td><td><div><div><label>"+flag+"%</label></div><progress value= '"+flag+"'  max= '100' ></progress></div>" +
+                    "</td><td><a href='"+m.dataUrl+"' download='test' class=\"layui-btn\">下载项目</a><button onclick='uploads(this)' class=\"layui-btn layui-btn-warm\">上传项目</button></td><tr/>";
+            $("#showTable").append(trHTML); //把trHTML的元素插入到id为showTable里头
+            console.log(m)
+          }
+        }
+
+
+
+
+      })
+      $("#unfinish").click(function() {   //未派发项目
+        $.ajax({
+          url: "/aselect", //获取数据列
+          type: 'GET',
+          success: function (data) {
+            add(data)
+          }
+        });
+
+        function add(data) {
+          var m={
+            pName:"",
+            pId:0,
+            cId:0,
+            dataUrl:"",
+            state:"",
+            price:0,
+            mPrinciple:"",
+            aPrinciple:"",
+            lPrinciple:"",
+            bTime:"",
+            eTime:"",
+            type:""
+          }
+          $("#showTable").find("tr").remove()//清空原有表格数据
+          for(var item in data){
+            var list_item=data[item];
+            m=list_item;
+            var flag;
+            flag=0
+            var trHTML="<tr><td>"+m.pName+"</td><td>"+m.pId+"</td><td>"+m.cId+"</td><td>"+m.dataUrl+"</td><td>"+m.state+"</td><td>"+m.price+"</td><td>"+m.mPrinciple+"</td><td>"+m.aPrinciple+"</td><td>"+m.lPrinciple+"</td><td>"+m.bTime+"</td><td>"+m.eTime+"</td><td>"+m.type+"</td><td><div><div><label>未派发</label></div><progress value= '"+flag+"'  max= '100' ></progress></div>" +
+                    "</td><td><button onclick='toGive(this)' class=\"layui-btn\">分发任务</button></td><tr/>";
+            $("#showTable").append(trHTML); //把trHTML的元素插入到id为showTable里头
+            console.log(m)
+          }
+        }
+      });
+
+      $("#add").click(function () {    //添加项目
+
+        var result={
+          pName:"",
+          cName:"",
+          price:0.0,
+          bTime:"",
+          eTime:"",
+          type:""
+        }
+
+        layer.open({
+          type:1,
+          area:['500px','600px'],
+          title: '项目录入',
+          content: $("#test"),
+          shade: 0,
+          btn: ['提交', '重置']
+          ,btn1: function(index, layero){
+            result.pName=$("#pName").val();
+            result.cName=$("#cName").val();
+            result.price=$("#price").val();
+            result.bTime=$("#bTime").val();
+            result.eTime=$("#eTime").val();
+            result.type=$("#type").val();
+            $.ajax({
+              type: "post",
+              url: "insert",
+              dataType: "text",
+              contentType: "application/json; charset=utf-8",
+              data: JSON.stringify(result),
+              success:function(result){
+                if(result=="successful"){
+                  alert("添加成功");
+                  uploadFile();
+                }
+
+                else
+                  alert("添加失败")
+              },
+              error:function(data, XMLHttpRequest, textStatus, errorThrown){
+                alert(data);
+                alert(XMLHttpRequest.status);
+                alert(XMLHttpRequest.readyState);
+                alert(textStatus);
+              }
+            });
+            layer.closeAll();
+          },
+          btn2: function(index, layero){
+            alert("2222");
+            return false;
+          },
+          cancel: function(layero,index){
+            layer.closeAll();
+          }
+
+        });
+
+
+
+
+      });
+
+
+      $("#btn").click(function() {   //刷新项目表
+        $.ajax({
+          url: "/select", //获取数据列
+          type: 'GET',
+          success: function (data) {
+            add(data)
+          }
+        });
+
+        function add(data) {
+          var m={
+            pName:"",
+            pId:0,
+            cId:0,
+            dataUrl:"",
+            state:"",
+            price:0,
+            mPrinciple:"",
+            aPrinciple:"",
+            lPrinciple:"",
+            bTime:"",
+            eTime:"",
+            type:""
+          }
+          $("#showTable").find("tr").remove()//清空原有表格数据
+          for(var item in data){
+            var list_item=data[item];
+            m=list_item;
+            var flag;
+            if (m.state==="建模中")
+              flag=30
+            else if (m.state==="渲染中")
+              flag=60
+            else if (m.state==="后期中")
+              flag=90
+            else if (m.state==="已完成")
+              flag=100
+            else
+              flag=0
+            var trHTML="<tr><td>"+m.pName+"</td><td>"+m.pId+"</td><td>"+m.cId+"</td><td>"+m.dataUrl+"</td><td>"+m.state+"</td><td>"+m.price+"</td><td>"+m.mPrinciple+"</td><td>"+m.aPrinciple+"</td><td>"+m.lPrinciple+"</td><td>"+m.bTime+"</td><td>"+m.eTime+"</td><td>"+m.type+"</td><td><div><div><label>"+flag+"%</label></div><progress value= '"+flag+"'  max= '100' ></progress></div>" +
+                    "</td><td><button class=\"layui-btn\" onclick='seeAllEmployee(this)'>项目员工</button><button class=\"layui-btn layui-btn-primary layui-border-red\"  onclick='clearProject(this)'>重置</button></td><tr/>";
+            $("#showTable").append(trHTML); //把trHTML的元素插入到id为showTable里头
+            console.log(m)
+          }
+        }
+      });
+    });
+  </script>
+</head>
+<body>
+<button id="btn" class="layui-btn">全部项目</button>
+<button id="add" class="layui-btn">新建项目</button>
+<button id="unfinish" class="layui-btn">未派发任务</button>
+<button id="receive" class="layui-btn">我的项目</button>
+<button id="newReceive" class="layui-btn">新收到的项目</button>
+<table class="layui-table">
+  <tr>
+    <td>项目名称</td>
+    <td>项目编号</td>
+    <td>客户编号</td>
+    <td>项目地址</td>
+    <td>项目状态</td>
+    <td>项目成本</td>
+    <td>建模负责人</td>
+    <td>渲染负责人</td>
+    <td>后期负责人</td>
+    <td>项目开始时间</td>
+    <td>项目结束时间</td>
+    <td>项目类型</td>
+    <td>项目进度</td>
+    <td>操作</td>
+  </tr>
+  <tbody id="showTable" >
+  <tr>
+    <td>房地产</td>
+    <td>1</td>
+    <td>1</td>
+    <td>地址1</td>
+    <td>建模中</td>
+    <td>100</td>
+    <td>张三</td>
+    <td>李四</td>
+    <td>王五</td>
+    <td>昨天</td>
+    <td>明天</td>
+    <td>房地产项目</td>
+    <td>
+      <div><div><label>70%</label></div><progress value= '70'  max= '100' ></progress></div>
+    </td>
+    <td>
+      <button class="layui-btn">详情</button>
+      <button class="layui-btn layui-btn-primary layui-border-red" >重置</button>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+
+
+<form class="layui-form" id="test" style="display:none" enctype="multipart/form-data">
+  <div class="layui-form-item">
+    <label class="layui-form-label">项目名称</label>
+    <div class="layui-input-block">
+      <input id="pName"  type="text" lay-verify="require" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">客户姓名</label>
+    <div class="layui-input-block">
+      <input id="cName" type="text" lay-verify="require" class="layui-input">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">项目成本</label>
+    <div class="layui-input-block">
+      <input id="price" type="text" lay-verify="require" class="layui-input">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">开始时间</label>
+    <div class="layui-input-block">
+      <input id="bTime" type="date" lay-verify="require" class="layui-input">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">结束时间</label>
+    <div class="layui-input-block">
+      <input id="eTime" type="date" lay-verify="require" class="layui-input">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">项目类型</label>
+    <div class="layui-input-block">
+      <input id="type" type="text" lay-verify="require" class="layui-input">
+    </div>
+  </div>
+</form>
+
+
+<table id="otherTable" class="layui-table" style="display:none">
+  <tr>
+    <td>工号</td>
+    <td>姓名</td>
+    <td>密码</td>
+    <td>职务</td>
+    <td>部门</td>
+    <td>类型</td>
+    <td>基础工资</td>
+    <td>员工评价</td>
+    <td>操作</td>
+  </tr>
+  <tbody id="showTableToSelect" >
+  <tr>
+    <td>1</td>
+    <td>刘伟</td>
+    <td class="layui-hide-v">1111</td>
+    <td>学生</td>
+    <td>cqjtu</td>
+    <td>老手</td>
+    <td>200</td>
+    <td>好</td>
+    <td>
+      <button class="layui-btn" >选中</button>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+
+<button style="display:none"  type="button" class="layui-btn" id="test1">上传图片</button>
+
+<div id="getSession" style="display:none">
+  [[${session.user}]]
+</div>
+
+<div id="peopleDuty" th:text="${session.user.eid}" style="display: none"></div>
+
+<script src="/layui/layui.js"></script>
+<script>
+  const isSelect={  //分配对象
+    sid:0,
+    send:0,
+    receive:0,
+    pid:0,
+    state:"未接受"
+  }
+  function toGive($this) {        //分发任务事件
+    $($this).parent().parent().remove();    //分发一个删除一个
+    var m=$($this).parent().parent().find("td").eq(1).text(); //把当前行的第0个属性值得到,即项目编号
+    isSelect.pid=m   //把项目编号保存到
+    $.ajax({
+      url: "/eselectde", //获取数据列
+      type: 'GET',
+      success: function (data) {
+        add(data)
+      }
+    });
+
+    function add(data) {
+      var m={
+        eid:0,
+        name:"",
+        password:"",
+        duty:"",
+        department:"",
+        type:"",
+        bMoney:0,
+        evaluate:"好"
+      }
+      $("#showTableToSelect").find("tr").remove()//清空原有表格数据
+      for(var item in data){
+        var list_item=data[item];
+        m=list_item;
+        const trHTML="<tr><td>"+m.eid+"</td><td>"+m.name+"</td><td class='layui-hide-v'>"+m.password+"</td><td>"+m.duty+"</td><td>"+m.department+"</td><td>"+m.type+"</td><td>"+m.bMoney+"</td><td>"+m.evaluate+"</td><td><button class=\"layui-btn\" onclick='selectEmployee(this)'>选中</button></td><tr/>";
+        $("#showTableToSelect").append(trHTML); //把trHTML的元素插入到id为showTable里头
+        console.log(m)
+      }
+
+    }
+    layer.open({
+      type:1,
+      area:['700px','600px'],
+      title: '项目分配人员',
+      content: $("#otherTable"),
+      shade: 0,
+      btn: ['关闭']
+      ,btn1: function(index, layero){
+        layer.closeAll();
+      },
+      cancel: function(layero,index){
+        layer.closeAll();
+      }
+
+    });
+
+
+  }
+  function selectEmployee($this) {     //选中员工事件
+    $($this).parent().parent().remove();    //选中一个删除一个
+    var m=$($this).parent().parent().find("td").eq(0).text(); //把当前行的第0个属性值得到,即工号
+    isSelect.receive=m
+    var result={  //分配对象
+      sid:0,
+      send:0,
+      receive:0,
+      pid:0,
+      state:"未接受"
+    }
+
+    var str1 =$("#peopleDuty").text();
+
+    result.sid=isSelect.sid
+    result.send=str1
+    result.receive=isSelect.receive
+    result.pid=isSelect.pid
+    result.state=isSelect.state
+    console.log(result)
+    $.ajax({
+      type: "post",
+      url: "aupdate",
+      dataType: "text",
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify(result),
+      success:function(result){
+        if(result=="successful")
+          alert("分配成功");
+        else
+          alert("分配失败")
+      },
+      error:function(data, XMLHttpRequest, textStatus, errorThrown){
+        alert(data);
+        alert(XMLHttpRequest.status);
+        alert(XMLHttpRequest.readyState);
+        alert(textStatus);
+      }
+    });
+
+  }
+
+  function seeAllEmployee($this) {        //查看项目负责员工
+    var m=$($this).parent().parent().find("td").eq(1).text(); //把当前行的第1个属性值得到,即项目编号
+    $.ajax({
+      type: "post",
+      url: "/toseeemployee",
+      dataType: "text",
+      contentType: "application/json; charset=utf-8",
+      data: m,                          //m是项目编号
+      success: function (result) {
+        var data=JSON.parse(result)      //转成对象
+        add(data)
+      }
+    });
+
+    function add(data) {
+      var m={
+        eid:0,
+        name:"",
+        password:"",
+        duty:"",
+        department:"",
+        type:"",
+        bMoney:0,
+        evaluate:"好"
+      }
+      $("#showTableToSelect").find("tr").remove()//清空原有表格数据
+      for(var item in data){
+        var m=data[item];
+        const trHTML="<tr><td>"+m.eid+"</td><td>"+m.name+"</td><td class='layui-hide-v'>"+m.password+"</td><td>"+m.duty+"</td><td>"+m.department+"</td><td>"+m.type+"</td><td>"+m.bMoney+"</td><td>"+m.evaluate+"</td><td>仅供查看</td><tr/>";
+        $("#showTableToSelect").append(trHTML); //把trHTML的元素插入到id为showTable里头
+      }
+    }
+    layer.open({
+      type:1,
+      area:['700px','600px'],
+      title: '项目负责员工',
+      content: $("#otherTable"),
+      shade: 0,
+      btn: ['关闭']
+      ,btn1: function(index, layero){
+        layer.closeAll();
+      },
+      cancel: function(layero,index){
+        layer.closeAll();
+      }
+
+    });
+
+
+  }
+
+
+  function  uploadFile() {  //上传项目文件
+    layer.open({
+      type:1,
+      area:['300px','200px'],
+      title: '项目文件录入',
+      content: $("#test1"),
+      shade: 0,
+      btn: ['关闭']
+      ,btn1: function(index, layero){
+        layer.closeAll();
+      },
+      cancel: function(layero,index){
+        layer.closeAll();
+      }
+
+    });
+
+  }
+  layui.use('upload', function(){
+    var upload = layui.upload;
+
+    //执行实例
+    var uploadInst = upload.render({
+      elem: '#test1' //绑定元素
+      ,url: '/upload' //上传接口
+      ,done: function(res){
+        alert("文件上传成功！")
+        //上传完毕回调
+      }
+      ,error: function(){
+        //请求异常回调
+      }
+    });
+  });
+  function refusePro($this){
+    $($this).parent().parent().remove();
+    var m=$($this).parent().parent().find("td").eq(1).text(); //把当前行的第1个属性值得到，及项目号
+    console.log(m)
+    $.ajax({
+      type: "post",
+      url: "/projectrefuse",
+      dataType: "text",
+      contentType: "application/text; charset=utf-8",
+      data: m,            //m是项目号
+      success:function(result){
+        if(result==="successful")
+          alert("拒绝成功")
+        else
+          alert("拒绝失败"+result)
+      },
+      error:function(data, XMLHttpRequest, textStatus, errorThrown){
+        alert(data);
+        alert(XMLHttpRequest.status);
+        alert(XMLHttpRequest.readyState);
+        alert(textStatus);
+      }
+    });
+  }
+  function acceptPro($this){
+    $($this).parent().parent().remove();
+    var m=$($this).parent().parent().find("td").eq(1).text(); //把当前行的第1个属性值得到，及项目号
+    console.log(m)
+    $.ajax({
+      type: "post",
+      url: "/projectaccept",
+      dataType: "text",
+      contentType: "application/text; charset=utf-8",
+      data: m,            //m是项目号
+      success:function(result){
+        if(result==="successful")
+          alert("已接收，请在我的项目中查看！")
+        else
+          alert("接受失败"+result)
+      },
+      error:function(data, XMLHttpRequest, textStatus, errorThrown){
+        alert(data);
+        alert(XMLHttpRequest.status);
+        alert(XMLHttpRequest.readyState);
+        alert(textStatus);
+      }
+    });
+  }
+</script>
+</body>
+</html>

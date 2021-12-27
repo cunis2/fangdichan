@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.ruanjian.mapper.PerformMapper">
+    <select id="selectall" resultType="com.example.ruanjian.beans.PerformBean">
+        select *from perform
+    </select>
+    <select id="selectByeid" resultType="com.example.ruanjian.beans.PerformBean" parameterType="com.example.ruanjian.beans.PerformBean">
+        select *from perform where eid = #{eid}
+    </select>
+    <select id="selectBypid" resultType="com.example.ruanjian.beans.PerformBean" parameterType="com.example.ruanjian.beans.PerformBean">
+        select *from perform where pid=#{pid};
+    </select>
+    <delete id="deleteBypid" >
+        delete from perform where pid=#{pid}
+    </delete>
+    <insert id="insert" parameterType="com.example.ruanjian.beans.PerformBean">
+        insert into perform value (#{id},#{eid},#{pid},#{evaluate},#{suggestion})
+    </insert>
+</mapper>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.ruanjian.mapper.SessionMapper">
+    <insert id="insertep" parameterType="com.example.ruanjian.beans.SessionBean">
+        insert into session values (#{sid},#{send},#{receive},#{pid},#{state})
+    </insert>
+    <select id="selectIs" resultType="com.example.ruanjian.beans.SessionBean">
+        select * from session where state="未接受"
+    </select>
+    <select id="selectpid" resultType="com.example.ruanjian.beans.SessionBean">
+        select  *from session where pid=#{pid}
+    </select>
+    <select id="selecteid" resultType="com.example.ruanjian.beans.SessionBean">
+        select *from session where receive=#{receive}
+    </select>
+    <delete id="deleteep" parameterType="com.example.ruanjian.beans.SessionBean">
+        delete from session where pid =#{pid} and receive =#{receive}
+    </delete>
+    <select id="selsectIs1" resultType="com.example.ruanjian.beans.SessionBean">
+        select * from session where state="接受"
+    </select>
+    <select id="selsectIs2" resultType="com.example.ruanjian.beans.SessionBean">
+        select * from session where state="拒绝"
+    </select>
+    <update id="updateaccecpt" parameterType="com.example.ruanjian.beans.SessionBean">
+        update session set state=#{state} where receive=#{receive} and pid=#{pid}
+    </update>
+</mapper>
