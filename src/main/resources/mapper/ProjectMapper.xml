@@ -32,7 +32,7 @@
         select *from project where pname=#{pName}
     </select>
     <update id="updateProject" parameterType="com.example.ruanjian.beans.ProjectBean">
-        update project set pname=#{PName},cid=#{cId},data_url=#{dataUrl},state=#{state},price=#{price},Mprincipal=#{mPrincipal},Aprincipal=#{aPrinciple},Lprincipal=#{lPrinciple},Btime=#{bTime},Etime=#{eTime},type=#{type} where pid=#{pId};
+        update project set pname=#{pName},cid=#{cId},data_url=#{dataUrl},state=#{state},price=#{price},Mprincipal=#{mPrinciple},Aprincipal=#{lPrinciple},Lprincipal=#{lPrinciple},Btime=#{bTime},Etime=#{eTime},type=#{type} where pid=#{pId};
     </update>
     <select id="selectByUrl" resultMap="bean">
         select *from project where data_url=#{dataUrl}

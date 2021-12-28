@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>绩效管理系统</title>
+    <style>
+        body,ul,li{
+            padding:0;
+            margin: 0;
+        }
+        li{
+            list-style: none;
+        }
+        .rating{
+            width: 300px;
+            height: 26px;
+            margin: 100px auto;
+        }
+        .rating-item{
+            float: left;
+            width:50px;
+            height: 50px;
+            background: url("/img/star.png") no-repeat ;
+            -webkit-background-size:50px 100px;
+            background-size: 50px 100px;
+            background-position: 0 -58px;
+            overflow: hidden;
+            margin-left: 10px;
+        }
+    </style>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <script src="/jquery/jquery-3.5.1.js"></script>
+    <script>
+        $(document).ready(function(){
+            $("#seeAllPerform").click(function () {
+                $.ajax({
+                    url: "/pselecta", //获取数据列
+                    type: 'GET',
+                    success: function (data) {
+                        add(data)
+                    }
+                });
+
+                function add(data) {
+                    var m={
+                        eid:0,
+                        name:"",
+                        password:"",
+                        duty:"",
+                        department:"",
+                        type:"",
+                        bMoney:0,
+                        evaluate:"好"
+                    }
+                    $("#showTable").find("tr").remove()//清空原有表格数据
+                    for(var item in data){
+                        m=data[item];
+                        const trHTML="<tr><td>"+m.eid+"</td><td>"+m.name+"</td><td>"+m.duty+"</td><td>"+m.department+"</td><td>"+m.type+"</td><td>"+m.bMoney+"</td><td>"+m.evaluate+"</td><td><button class=\"layui-btn\" onclick='evaluateEmployee(this)'>评价员工</button><button class=\"layui-btn layui-btn-primary layui-border-red\"  onclick='seeScore(this)'>员工负责项目详情</button></td><tr/>";
+                        $("#showTable").append(trHTML); //把trHTML的元素插入到id为showTable里头
+                        console.log(m)
+                    }
+
+                }
+
+
+            })
+
+
+
+        })
+    </script>
+</head>
+<body>
+<button class="layui-btn" id="seeAllPerform">查看员工绩效</button>
+<table class="layui-table">
+    <tr>
+        <td>工号</td>
+        <td>姓名</td>
+        <td>职务</td>
+        <td>部门</td>
+        <td>类型</td>
+        <td>基础工资</td>
+        <td>员工评价</td>
+        <td>操作</td>
+    </tr>
+    <tbody id="showTable" >
+    <tr>
+        <td>1</td>
+        <td>刘伟</td>
+        <td>学生</td>
+        <td>cqjtu</td>
+        <td>老手</td>
+        <td>200</td>
+        <td>好</td>
+        <td>
+            <button class="layui-btn" >评价员工</button>
+
+            <button class="layui-btn layui-btn-primary layui-border-red" >员工负责项目详情</button>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<table id="tabPerform" class="layui-table" style="display: none">
+    <tr>
+        <td>项目名称</td>
+        <td>项目编号</td>
+        <td>客户编号</td>
+        <td>项目地址</td>
+        <td>项目状态</td>
+        <td>项目成本</td>
+        <td>项目类型</td>
+        <td>项目进度</td>
+        <td>操作</td>
+    </tr>
+    <tbody id="showEmployeePerform" >
+    <tr>
+        <td>房地产</td>
+        <td>1</td>
+        <td>1</td>
+        <td>地址1</td>
+        <td>建模中</td>
+        <td>100</td>
+        <td>房地产项目</td>
+        <td>
+            <div><div><label>70%</label></div><progress value= '70'  max= '100' ></progress></div>
+        </td>
+        <td>
+            <button class="layui-btn">打分</button>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<ul class="rating" id="rating" style="display: none">
+    <li class="rating-item" ></li>
+    <li class="rating-item" ></li>
+    <li class="rating-item" ></li>
+    <li class="rating-item" ></li>
+    <li class="rating-item" ></li>
+</ul>
+
+<form id="evaForm" class="layui-form" style="display: none">
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">评价员工</label>
+        <div class="layui-input-block">
+            <textarea id="evaluate"    placeholder="请输入内容" class="layui-textarea"></textarea>
+        </div>
+    </div>
+</form>
+
+<script src="/layui/layui.js"></script>
+<script>
+    var clickEid;
+    var num = 0;//点亮个数
+    $item = $('#rating').find('.rating-item');//获取的所有li
+    //点亮星星函数
+    var dianLiang = function (num) {
+        $item.each(function (index) { //遍历所有li,即所有星星
+            if (index < num){
+                $(this).css('background-position','0 0') //点亮
+            }else {
+                $(this).css('background-position','0 -58px') //未点亮
+            }
+        })
+    }
+    //    初始化,默认点亮2颗
+    dianLiang(num)
+    //    绑定事件
+    $item.on('mouseover',function () {
+        dianLiang($(this).index() + 1)
+    }).on('click',function () {
+        dianLiang($(this).index() +1);
+        num = $(this).index() +1
+       // alert(num)      //点击星星数
+    })
+    $('#rating').on('mouseout',function () {
+        dianLiang(num)
+    })
+
+
+
+
+    function evaluateEmployee($this) {     //评价员工
+        var m=$($this).parent().parent().find("td").eq(0).text(); //把当前行的第0个属性值得到,即工号
+
+        layer.open({
+            type:1,
+            area:['700px','400px'],
+            title: '评价员工',
+            content: $("#evaForm"),
+            shade: 0,
+            btn: ['提交评价']
+            ,btn1: function(index, layero){
+                var em={     //传给后端的员工对象
+                    eid:0,
+                    name:"",
+                    password:"",
+                    duty:"",
+                    department:"",
+                    type:"",
+                    bMoney:0,
+                    evaluate:"好"
+                }
+                em.eid=m
+                em.evaluate=$("#evaluate").val();
+                $.ajax({
+                    type: "post",
+                    url: "/eevaluate",
+                    dataType: "text",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(em),            //em是员工对象
+                    success: function (result) {
+                        if (result === "successful")
+                            alert("评价成功")
+                        else
+                            alert("评价失败" + result)
+                    }
+                });
+                layer.closeAll();
+            },
+            cancel: function(layero,index){
+                layer.closeAll();
+            }
+
+        });
+    }
+
+    function seeScore($this) {
+        var m=$($this).parent().parent().find("td").eq(0).text(); //把当前行的第0个属性值得到,即工号
+        clickEid=m   //把当前评价的员工的赋值全局
+        $.ajax({
+            type: "post",
+            url: "/selectownp",
+            dataType: "text",
+            contentType: "application/json; charset=utf-8",
+            data: m,                          //m是工号
+            success: function (result) {
+                var data=JSON.parse(result)      //得到的该员工的项目list转成对象
+                add(data)
+            }
+        });
+
+        function add(data) {
+            var m={
+                pName:"",
+                pId:0,
+                cId:0,
+                dataUrl:"",
+                state:"",
+                price:0,
+                mPrinciple:"",
+                aPrinciple:"",
+                lPrinciple:"",
+                bTime:"",
+                eTime:"",
+                type:""
+            }
+            $("#showEmployeePerform").find("tr").remove()//清空原有表格数据
+            for(var item in data){
+                var m=data[item];
+                var flag;
+                if (m.state==="建模中")
+                    flag=30
+                else if (m.state==="渲染中")
+                    flag=60
+                else if (m.state==="后期中")
+                    flag=90
+                else if (m.state==="已完成")
+                    flag=100
+                else
+                    flag=0
+                var trHTML="<tr><td>"+m.pName+"</td><td>"+m.pId+"</td><td>"+m.cId+"</td><td>"+m.dataUrl+"</td><td>"+m.state+"</td><td>"+m.price+"</td><td>"+m.type+"</td><td><div><div><label>"+flag+"%</label></div><progress value= '"+flag+"'  max= '100' ></progress></div>" +
+                    "</td><td><button class=\"layui-btn layui-btn-primary layui-border-red\"  onclick='scoreIt(this)'>打分</button></td><tr/>";
+                $("#showEmployeePerform").append(trHTML); //把trHTML的元素插入到id为showTable里头
+                console.log(m)
+            }
+        }
+        layer.open({
+            type:1,
+            area:['700px','600px'],
+            title: '员工负责的项目',
+            content: $("#tabPerform"),
+            shade: 0,
+            btn: ['关闭']
+            ,btn1: function(index, layero){
+                layer.closeAll();
+            },
+            cancel: function(layero,index){
+                layer.closeAll();
+            }
+
+        });
+
+
+    }
+
+
+    function scoreIt($this) { //打分
+        var m=$($this).parent().parent().find("td").eq(1).text(); //把当前行的第2个属性值得到,即项目编号
+        layer.open({
+            type:1,
+            area:['700px','600px'],
+            title: '评分',
+            content: $("#rating"),
+            shade: 0,
+            btn: ['提交']
+            ,btn1: function(index, layero){
+                var performData={
+                    id:0,
+                    eid:0,
+                    pid:0,
+                    evaluate:"",
+                    suggestion:""
+                }
+                performData.pid=m;
+                if(num===1)
+                    performData.evaluate="很差"
+                else if(num===2)
+                    performData.evaluate="较差"
+                else if(num===3)
+                    performData.evaluate="一般"
+                else if(num===4)
+                    performData.evaluate="较好"
+                else if(num===5)
+                    performData.evaluate="很好"
+                performData.eid=clickEid;
+
+                $.ajax({
+                        type: "post",
+                        url: "/toEvaluateProject",
+                        dataType: "text",
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify(performData),
+                        success:function(result){
+                            if(result==="successful"){
+                                alert("评价成功");
+                            }
+
+                            else
+                                alert("评价失败")
+                        }
+                });
+
+
+                layer.closeAll();
+            },
+            cancel: function(layero,index){
+                layer.closeAll();
+            }
+
+        });
+    }
+</script>
+
+</body>
+</html>

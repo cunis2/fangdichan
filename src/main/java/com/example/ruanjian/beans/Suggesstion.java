@@ -1,17 +1,21 @@
 package com.example.ruanjian.beans;
 
-public class suggesstion {
-    int pid;       //目的项目
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Suggesstion {
+    int pId;       //目的项目
     String state;   //更改后状态
     String suggestion;  //原因
-String result;    //更改结果：交付or重置
-
-    public int getPid() {
-        return pid;
-    }
+    String result;    //更改结果：交付or重置
 
     public void setPid(int pid) {
-        this.pid = pid;
+        this.pId = pid;
     }
 
     public String getState() {
@@ -38,13 +42,11 @@ String result;    //更改结果：交付or重置
         this.result = result;
     }
 
-    @Override
-    public String toString() {
-        return "evaluate{" +
-                "pid=" + pid +
-                ", state='" + state + '\'' +
-                ", suggestion='" + suggestion + '\'' +
-                ", result='" + result + '\'' +
-                '}';
+    public int getpId() {
+        return pId;
+    }
+
+    public void setpId(int pId) {
+        this.pId = pId;
     }
 }

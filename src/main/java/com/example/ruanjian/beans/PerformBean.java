@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PerformBean {
     int id;
-    int eid;
-    int pid;
+    int eId;
+    int pId;
     String evaluate;
     String suggestion;
 
@@ -22,20 +22,20 @@ public class PerformBean {
         this.id = id;
     }
 
-    public int getEid() {
-        return eid;
+    public int geteId() {
+        return eId;
     }
 
-    public void setEid(int eid) {
-        this.eid = eid;
+    public void seteId(int eId) {
+        this.eId = eId;
     }
 
-    public int getPid() {
-        return pid;
+    public int getpId() {
+        return pId;
     }
 
-    public void setPid(int pid) {
-        this.pid = pid;
+    public void setpId(int pId) {
+        this.pId = pId;
     }
 
     public String getEvaluate() {

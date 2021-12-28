@@ -5,16 +5,16 @@
     <select id="selectall" resultType="com.example.ruanjian.beans.PerformBean">
         select *from perform
     </select>
-    <select id="selectByeid" resultType="com.example.ruanjian.beans.PerformBean" parameterType="com.example.ruanjian.beans.PerformBean">
-        select *from perform where eid = #{eid}
+    <select id="selectByeid" resultType="com.example.ruanjian.beans.PerformBean" >
+        select *from perform where eid = #{eId}
     </select>
-    <select id="selectBypid" resultType="com.example.ruanjian.beans.PerformBean" parameterType="com.example.ruanjian.beans.PerformBean">
-        select *from perform where pid=#{pid};
+    <select id="selectBypid" resultType="com.example.ruanjian.beans.PerformBean" >
+        select *from perform where pid=#{pId};
     </select>
     <delete id="deleteBypid" >
-        delete from perform where pid=#{pid}
+        delete from perform where pid=#{pId}
     </delete>
     <insert id="insert" parameterType="com.example.ruanjian.beans.PerformBean">
-        insert into perform value (#{id},#{eid},#{pid},#{evaluate},#{suggestion})
+        insert into perform value (#{id},#{eId},#{pId},#{evaluate},#{suggestion})
     </insert>
 </mapper>

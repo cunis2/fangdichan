@@ -50,10 +50,20 @@ public class ProjectController {
         sessionService.updateaccecpt(sessionBean);
         PerformBean performBean = new PerformBean();
         performBean.setSuggestion(null);
-        performBean.setEid(eid);
-        performBean.setPid(Integer.parseInt(pid));
+        performBean.seteId(eid);
+        performBean.setpId(Integer.parseInt(pid));
         performBean.setEvaluate(null);
+        System.out.println(performBean);
         performService.insert(performBean);
+        return "successful";
+    }
+    @RequestMapping("/changestate")
+    @ResponseBody
+    public String changestate(@RequestBody Suggesstion suggesstion){
+        System.out.println(suggesstion);
+        ProjectBean projectBean = projectService.selectProjectByPid(suggesstion.getpId());
+        projectBean.setState(suggesstion.getState());
+        projectService.updateProject(projectBean);
         return "successful";
     }
     @RequestMapping("toseeemployee")

@@ -18,16 +18,17 @@ public class PerformServiceImpl implements PerformService {
     }
 
     @Override
-    public PerformBean selectByeid(PerformBean performBean) {
-        PerformBean bean = performMapper.selectByeid(performBean);
-        return bean;
+    public List<PerformBean> selectByeid(int eid) {
+        List<PerformBean> list = performMapper.selectByeid(eid);
+        return list;
     }
 
     @Override
-    public PerformBean selectBypid(PerformBean performBean) {
-        PerformBean bean = performMapper.selectBypid(performBean);
-        return bean;
+    public List<PerformBean> selectBypid(int pid) {
+        List<PerformBean> list = performMapper.selectBypid(pid);
+        return list;
     }
+
 
     @Override
     public int deleteBypid(PerformBean performBean) {
