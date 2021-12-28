@@ -237,7 +237,7 @@
             else
               flag=0
             var trHTML="<tr><td>"+m.pName+"</td><td>"+m.pId+"</td><td>"+m.cId+"</td><td>"+m.dataUrl+"</td><td>"+m.state+"</td><td>"+m.price+"</td><td>"+m.mPrinciple+"</td><td>"+m.aPrinciple+"</td><td>"+m.lPrinciple+"</td><td>"+m.bTime+"</td><td>"+m.eTime+"</td><td>"+m.type+"</td><td><div><div><label>"+flag+"%</label></div><progress value= '"+flag+"'  max= '100' ></progress></div>" +
-                    "</td><td><button class=\"layui-btn\" onclick='seeAllEmployee(this)'>项目员工</button><button class=\"layui-btn layui-btn-primary layui-border-red\"  onclick='clearProject(this)'>重置</button></td><tr/>";
+                    "</td><td><button class=\"layui-btn\" onclick='seeAllEmployee(this)'>项目员工</button><button class=\"layui-btn layui-btn-primary layui-border-red\"  onclick='clearProject(this)'>更改状态</button></td><tr/>";
             $("#showTable").append(trHTML); //把trHTML的元素插入到id为showTable里头
             console.log(m)
           }
@@ -365,7 +365,25 @@
   </tbody>
 </table>
 
-
+<form id="stateCh" class="layui-form" style="display: none">
+  <div class="layui-form-item">
+    <label class="layui-form-label">更改进度至</label>
+    <div class="layui-input-block">
+      <select id="stateChange" type="text" lay-verify="require" class="layui-input">
+        <option  value="建模中">建模中</option>
+        <option  value="渲染中">渲染中</option>
+        <option  value="后期中">后期中</option>
+        <option  value="已完成">已完成</option>
+      </select>
+    </div>
+  </div>
+  <div class="layui-form-item layui-form-text">
+    <label class="layui-form-label">重置原因及建议</label>
+    <div class="layui-input-block">
+      <textarea id="suggestion"    placeholder="请输入内容" class="layui-textarea"></textarea>
+    </div>
+  </div>
+</form>
 <button style="display:none"  type="button" class="layui-btn" id="test1">上传图片</button>
 
 <div id="getSession" style="display:none">
@@ -408,8 +426,7 @@
       }
       $("#showTableToSelect").find("tr").remove()//清空原有表格数据
       for(var item in data){
-        var list_item=data[item];
-        m=list_item;
+        m=data[item];
         const trHTML="<tr><td>"+m.eid+"</td><td>"+m.name+"</td><td class='layui-hide-v'>"+m.password+"</td><td>"+m.duty+"</td><td>"+m.department+"</td><td>"+m.type+"</td><td>"+m.bMoney+"</td><td>"+m.evaluate+"</td><td><button class=\"layui-btn\" onclick='selectEmployee(this)'>选中</button></td><tr/>";
         $("#showTableToSelect").append(trHTML); //把trHTML的元素插入到id为showTable里头
         console.log(m)
@@ -525,6 +542,66 @@
     });
 
 
+  }
+
+  function clearProject($this) {      //重置项目
+    var m={
+      pId:0,
+      state:"",
+      suggestion:"",
+      result:""
+    }
+    m.pId=$($this).parent().parent().find("td").eq(1).text(); //把当前行的第0个属性值得到,即项目编号
+    var thisState=$($this).parent().parent().find("td").eq(4).text(); //当前状态
+    layer.open({
+      type:1,
+      area:['700px','400px'],
+      title: '项目更改状态',
+      content: $("#stateCh"),
+      shade: 0,
+      btn: ['确定更改','关闭']
+      ,btn1: function(index, layero){
+        m.state=$("#stateChange").val();
+        m.suggestion=$("#suggestion").val();
+        if(thisState==="建模中"){
+          if(m.state!==thisState)
+            m.result="交付"
+          else m.result="重置";
+        }
+        else if(thisState==="渲染中"){
+          if(m.state==="建模中"||m.state==="渲染中"){
+            m.result="重置"
+          }
+          else
+            m.result="交付"
+        }
+        else if(thisState==="后期中"){
+          if(m.state==="已完成")
+            m.result="交付"
+          else m.result="重置"
+        }
+        else m.result="重置"
+        $.ajax({
+          type: "post",
+          url: "/changeState",
+          dataType: "text",
+          contentType: "application/json; charset=utf-8",
+          data: JSON.stringify(m),            //m是项目
+          success: function (result) {
+            if (result === "successful")
+              alert("重置成功")
+            else
+              alert("重置失败" + result)
+          }
+        });
+
+        layer.closeAll();
+      },
+      cancel: function(layero,index){
+        layer.closeAll();
+      }
+
+    });
   }
 
 
