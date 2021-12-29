@@ -1,6 +1,6 @@
 package com.example.ruanjian.beans;
 
-public class unit {
+public class Unit {
     String unit1;
     String unit2;
     String unit3;
