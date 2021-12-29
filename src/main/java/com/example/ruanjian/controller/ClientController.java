@@ -1,5 +1,6 @@
 package com.example.ruanjian.controller;
 
+import com.alibaba.excel.EasyExcel;
 import com.example.ruanjian.beans.ClientBean;
 import com.example.ruanjian.beans.ClientBean;
 import com.example.ruanjian.mapper.ClientMapper;
@@ -14,6 +15,12 @@ import java.util.List;
 public class ClientController {
     @Autowired
     private ClientService clientService;
+    @RequestMapping("/cdc")
+    @ResponseBody
+    public String cdc(){
+        EasyExcel.write("导出员工信息.xlsx",ClientBean.class).sheet().doWrite(queryUserlist());
+        return "successful";
+    }
     @RequestMapping("/cselect")
     @ResponseBody
     public List<ClientBean> queryUserlist(){

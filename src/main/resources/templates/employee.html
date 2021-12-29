@@ -72,7 +72,25 @@
 
 
       });
-
+      $("#dc").click(function (){
+        $.ajax({
+          type: "GET",
+          url: "/dc",
+          content:"application/text; charset=utf-8",
+          success:function(result){
+            if(result==="successful")
+              alert("导出成功");
+            else
+              alert("导出失败")
+          },
+          error:function(data, XMLHttpRequest, textStatus, errorThrown){
+            alert(data);
+            alert(XMLHttpRequest.status);
+            alert(XMLHttpRequest.readyState);
+            alert(textStatus);
+          }
+        });
+      })
       $("#btn").click(function() {   //刷新员工表
         $.ajax({
           url: "/eselectall", //获取数据列
@@ -116,6 +134,7 @@
 <body>
 <button class="layui-btn" id="btn">全部员工</button>
 <button class="layui-btn" id="add">添加员工</button>
+<button class="layui-btn" id="dc">导出员工数据</button>
 <table class="layui-table">
   <tr>
     <td>工号</td>

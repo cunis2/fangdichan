@@ -41,4 +41,10 @@ public class PerformServiceImpl implements PerformService {
         performMapper.insert(performBean);
         return 1;
     }
+
+    @Override
+    public int update(PerformBean performBean) {
+        performMapper.update(performBean);
+        return 1;
+    }
 }

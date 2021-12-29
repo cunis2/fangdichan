@@ -1,5 +1,6 @@
 package com.example.ruanjian.controller;
 
+import com.alibaba.excel.EasyExcel;
 import com.example.ruanjian.beans.*;
 import com.example.ruanjian.config.FileConfig;
 import com.example.ruanjian.service.*;
@@ -57,6 +58,12 @@ public class ProjectController {
         performService.insert(performBean);
         return "successful";
     }
+    @RequestMapping("/pdc")
+    @ResponseBody
+    public String pdc(){
+        EasyExcel.write("项目表.xlsx",ProjectBean.class).sheet().doWrite(queryProjectList());
+        return "successful";
+    }
     @RequestMapping("/changestate")
     @ResponseBody
     public String changestate(@RequestBody Suggesstion suggesstion){
@@ -64,6 +71,8 @@ public class ProjectController {
         ProjectBean projectBean = projectService.selectProjectByPid(suggesstion.getpId());
         projectBean.setState(suggesstion.getState());
         projectService.updateProject(projectBean);
+        PerformBean performBean = new PerformBean();
+        performBean.setpId(suggesstion.getpId());
         return "successful";
     }
     @RequestMapping("toseeemployee")

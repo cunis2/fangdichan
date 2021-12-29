@@ -29,6 +29,12 @@ public class PerformController {
     public String perform(){
         return "performA";
     }
+    @RequestMapping("/updateeva")
+    @ResponseBody
+    public String evaluateupdate(@RequestBody PerformBean performBean){
+            performService.update(performBean);
+            return "successful";
+    }
     @RequestMapping("/selectownp")
     @ResponseBody
     public List<ProjectBean> selectownp(@RequestBody String eid){

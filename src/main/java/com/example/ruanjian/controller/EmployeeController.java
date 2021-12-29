@@ -1,5 +1,6 @@
 package com.example.ruanjian.controller;
 
+import com.alibaba.excel.EasyExcel;
 import com.example.ruanjian.beans.EmployeeBean;
 import com.example.ruanjian.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,12 @@ public class EmployeeController {
     @RequestMapping( value="lay")
     public String aaa(){
         return "employee";
+    }
+    @RequestMapping("/dc")
+    @ResponseBody
+    public String dc(){
+        EasyExcel.write("员工表.xlsx",EmployeeBean.class).sheet().doWrite(selectall());
+        return "successful";
     }
     @RequestMapping("/eselectall")
     @ResponseBody

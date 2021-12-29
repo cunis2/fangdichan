@@ -307,12 +307,12 @@
             ,btn1: function(index, layero){
                 var performData={
                     id:0,
-                    eid:0,
-                    pid:0,
+                    eId:0,
+                    pId:0,
                     evaluate:"",
                     suggestion:""
                 }
-                performData.pid=m;
+                performData.pId=m;
                 if(num===1)
                     performData.evaluate="很差"
                 else if(num===2)
@@ -323,11 +323,11 @@
                     performData.evaluate="较好"
                 else if(num===5)
                     performData.evaluate="很好"
-                performData.eid=clickEid;
+                performData.eId=clickEid;
 
                 $.ajax({
                         type: "post",
-                        url: "/toEvaluateProject",
+                        url: "/updateeva",
                         dataType: "text",
                         contentType: "application/json; charset=utf-8",
                         data: JSON.stringify(performData),

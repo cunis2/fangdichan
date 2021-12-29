@@ -8,6 +8,25 @@
     <script src="/area.js"></script>
 </head>
 <script>
+    $("#dc").click(function (){
+        $.ajax({
+            type: "GET",
+            url: "/pdc",
+            content:"application/text; charset=utf-8",
+            success:function(result){
+                if(result==="successful")
+                    alert("导出成功");
+                else
+                    alert("导出失败")
+            },
+            error:function(data, XMLHttpRequest, textStatus, errorThrown){
+                alert(data);
+                alert(XMLHttpRequest.status);
+                alert(XMLHttpRequest.readyState);
+                alert(textStatus);
+            }
+        });
+    })
     $(document).ready(function() {
         $("#addClient").click(function () {    //添加客户
 
@@ -167,6 +186,7 @@
 </script>
 <button id="showAllClient" class="layui-btn">查看全部客户</button>
 <button id="addClient" class="layui-btn">录入客户信息</button>
+<button id="dc" class="layui-btn">导出客户信息</button>
 <form class="layui-form">
 <div class="layui-form-item">
     <label class="layui-form-label">选择地区</label>

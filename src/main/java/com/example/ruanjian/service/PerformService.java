@@ -13,4 +13,5 @@ public interface PerformService {
     List<PerformBean> selectBypid(int pid);//通过项目查询
     int deleteBypid(PerformBean performBean);//删除
     int insert(PerformBean performBean);//插入
+    int update(PerformBean performBean);//员工打分
 }

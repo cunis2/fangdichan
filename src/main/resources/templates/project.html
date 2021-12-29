@@ -205,7 +205,25 @@
             add(data)
           }
         });
-
+        $("#dc").click(function (){
+          $.ajax({
+            type: "GET",
+            url: "/pdc",
+            content:"application/text; charset=utf-8",
+            success:function(result){
+              if(result==="successful")
+                alert("导出成功");
+              else
+                alert("导出失败")
+            },
+            error:function(data, XMLHttpRequest, textStatus, errorThrown){
+              alert(data);
+              alert(XMLHttpRequest.status);
+              alert(XMLHttpRequest.readyState);
+              alert(textStatus);
+            }
+          });
+        })
         function add(data) {
           var m={
             pName:"",
@@ -252,6 +270,7 @@
 <button id="unfinish" class="layui-btn">未派发任务</button>
 <button id="receive" class="layui-btn">我的项目</button>
 <button id="newReceive" class="layui-btn">新收到的项目</button>
+<button class="layui-btn" id="dc">导出项目数据</button>
 <table class="layui-table">
   <tr>
     <td>项目名称</td>
