@@ -1,5 +1,6 @@
 package com.example.ruanjian.service.impl;
 
+import com.example.ruanjian.beans.Unit;
 import com.example.ruanjian.service.ClientService;
 import com.example.ruanjian.beans.ClientBean;
 import com.example.ruanjian.mapper.ClientMapper;
@@ -12,6 +13,11 @@ public class ClientServiceImpl implements ClientService{
     @Autowired
     ClientMapper clientMapper;
 
+    @Override
+    public List<ClientBean> queryUserByunit(Unit unit){
+        List<ClientBean> clientBeans = clientMapper.queryUserByunit(unit);
+        return clientBeans;
+    }
 
     @Override
     public List<ClientBean> queryUserList() {

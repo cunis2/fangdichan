@@ -39,6 +39,21 @@ public class ProjectController {
     public String pro(){
         return "project";
     }
+    @RequestMapping("/selectsugg")
+    @ResponseBody
+    public String selecteva(@RequestBody String pid){
+        List<PerformBean> list = performService.selectBypid(Integer.parseInt(pid));
+        PerformBean bean = list.get(0);
+        String suggestion = bean.getSuggestion();
+        System.out.println(suggestion);
+        return suggestion;
+    }
+    @RequestMapping("prosugupdate")
+    @ResponseBody
+    public String evapj(@RequestBody PerformBean performBean){
+        performService.update(performBean);
+        return "successful";
+    }
     @RequestMapping("/projectaccept")
     @ResponseBody
     public String accept (@RequestBody String pid,HttpSession session){
@@ -66,13 +81,35 @@ public class ProjectController {
     }
     @RequestMapping("/changestate")
     @ResponseBody
-    public String changestate(@RequestBody Suggesstion suggesstion){
-        System.out.println(suggesstion);
+    public String changestate(@RequestBody Suggesstion suggesstion,HttpSession session){
         ProjectBean projectBean = projectService.selectProjectByPid(suggesstion.getpId());
         projectBean.setState(suggesstion.getState());
         projectService.updateProject(projectBean);
         PerformBean performBean = new PerformBean();
         performBean.setpId(suggesstion.getpId());
+        String suggestion = suggesstion.getSuggestion();
+        performBean.setSuggestion(suggestion);
+        EmployeeBean bean = (EmployeeBean) session.getAttribute("user");
+        String department = bean.getDepartment();
+        List<EmployeeBean> list = employeeService.selectBydepartment(department);
+        int eid = 0;
+        String sl = department+"主管";
+        for (EmployeeBean e :
+                list) {
+            if (Objects.equals(e.getDuty(), sl)) {
+                eid = e.getEid();
+                break;
+            }
+        }
+        SessionBean sessionBean = new SessionBean();
+        sessionBean.setPid(suggesstion.getpId());
+        sessionBean.setSend(eid);
+        List<SessionBean> sessionBeans = sessionService.selectdeBypid(sessionBean);
+        for (SessionBean s :
+                sessionBeans) {
+            performBean.seteId(s.getReceive());
+            performService.updatesuggesstion(performBean);
+        }
         return "successful";
     }
     @RequestMapping("toseeemployee")
@@ -105,6 +142,7 @@ public class ProjectController {
     public String insertProject(@RequestBody PartProject project){
         ProjectBean projectBean = new ProjectBean();
         projectBean.setType(project.getType());
+        projectBean.setPrice(project.getPrice());
         projectBean.setState("建模中");
         projectBean.setDataUrl("null");
         projectBean.setaPrinciple("李四");

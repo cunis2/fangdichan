@@ -5,6 +5,9 @@
     <insert id="insertep" parameterType="com.example.ruanjian.beans.SessionBean">
         insert into session values (#{sid},#{send},#{receive},#{pid},#{state})
     </insert>
+    <select id="selectdeBypid" resultType="com.example.ruanjian.beans.SessionBean">
+        select * from session where pid=#{pid} and send=#{send}
+    </select>
     <select id="selectIs" resultType="com.example.ruanjian.beans.SessionBean">
         select * from session where state="未接受"
     </select>

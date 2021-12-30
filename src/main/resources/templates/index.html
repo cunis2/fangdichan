@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <title>layout 管理系统大布局 - Layui</title>
   <link rel="stylesheet" href="/layui/css/layui.css">
+  <script src="/jquery/jquery-3.5.1.js"></script>
 </head>
 <body>
 
@@ -15,7 +16,7 @@
     <ul class="layui-nav layui-layout-right">
       <li class="layui-nav-item layui-hide layui-show-md-inline-block">
         <div>
-          <span th:text="${session.user.duty}"></span>
+          <span id="duty" th:text="${session.user.duty}"></span>
           <span>:</span>
           <span th:text="${session.user.name}"></span>
         </div>
@@ -35,7 +36,7 @@
     <div class="layui-side-scroll">
       <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
       <ul class="layui-nav layui-nav-tree" lay-filter="test">
-        <li class="layui-nav-item layui-nav-itemed">
+        <li id="employeeSystem" class="layui-nav-item layui-nav-itemed">
           <a class="" href="javascript:;">员工</a>
           <dl class="layui-nav-child">
             <dd ><a href="/lay" target="main_self_frame" >员工管理</a></dd>
@@ -50,13 +51,13 @@
         <li class="layui-nav-item">
           <a href="javascript:;">客户</a>
           <dl class="layui-nav-child">
-            <dd><a href="/cc" target="main_self_frame">客户信息</a></dd>
+            <dd><a href="/tiaozhuan" target="main_self_frame">客户信息</a></dd>
           </dl>
         </li>
         <li class="layui-nav-item"><a href="javascript:;">财务</a>
           <dl class="layui-nav-child">
-            <dd><a href="/perform" target="main_self_frame">绩效管理</a></dd>
-            <dd><a href="/test2" target="main_self_frame">我的绩效</a></dd>
+            <dd><a id="performSystem" href="/perform" target="main_self_frame">绩效管理</a></dd>
+            <dd><a href="/myPerform" target="main_self_frame">我的绩效</a></dd>
           </dl>
         </li>
       </ul>
@@ -72,7 +73,11 @@
 </div>
 <script src="/layui/layui.js"></script>
 <script>
-
+  var duty=$("#duty").text();
+  if(duty==="模型"||duty==="渲染"||duty==="后期"||duty==="前台"){
+    $("#employeeSystem").hide()   //普通员工不能管理员工系统
+    $("#performSystem").hide()   //普通员工不能管理员工系统
+  }
   //js
   layui.use(['element', 'layer', 'util'], function(){
     var element = layui.element

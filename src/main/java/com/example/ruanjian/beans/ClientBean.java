@@ -16,6 +16,7 @@ public class ClientBean {
      String unit1;
      String unit2;
      String unit3;
+     String unit4;
 
     public int getCid() {
         return cid;
@@ -79,5 +80,13 @@ public class ClientBean {
 
     public void setUnit3(String unit3) {
         this.unit3 = unit3;
+    }
+
+    public String getUnit4() {
+        return unit4;
+    }
+
+    public void setUnit4(String unit4) {
+        this.unit4 = unit4;
     }
 }

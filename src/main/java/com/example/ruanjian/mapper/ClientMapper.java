@@ -1,6 +1,7 @@
 package com.example.ruanjian.mapper;
 
 import com.example.ruanjian.beans.ClientBean;
+import com.example.ruanjian.beans.Unit;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 import  java.util.List;
@@ -19,5 +20,7 @@ public interface ClientMapper {
     int deleteUser(String cid);
 
     ClientBean queryUserByname(String name);
+
+    List<ClientBean> queryUserByunit(Unit unit);
 
 }

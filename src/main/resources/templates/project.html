@@ -45,7 +45,7 @@
         }
       });
 
-      $("#receive").click(function () {//收到的项目
+      $("#receive").click(function () {//我的项目
         $.ajax({
           url:"/selectmyproject", //获取我的项目
           type:'GET',
@@ -84,7 +84,7 @@
             else
               flag=0
             var trHTML="<tr><td>"+m.pName+"</td><td>"+m.pId+"</td><td>"+m.cId+"</td><td>"+m.dataUrl+"</td><td>"+m.state+"</td><td>"+m.price+"</td><td>"+m.mPrinciple+"</td><td>"+m.aPrinciple+"</td><td>"+m.lPrinciple+"</td><td>"+m.bTime+"</td><td>"+m.eTime+"</td><td>"+m.type+"</td><td><div><div><label>"+flag+"%</label></div><progress value= '"+flag+"'  max= '100' ></progress></div>" +
-                    "</td><td><a href='"+m.dataUrl+"' download='test' class=\"layui-btn\">下载项目</a><button onclick='uploads(this)' class=\"layui-btn layui-btn-warm\">上传项目</button></td><tr/>";
+                    "</td><td><a href='"+m.dataUrl+"' download='test' class=\"layui-btn\">下载项目</a><button onclick='uploads(this)' class=\"layui-btn layui-btn-warm\">上传项目</button><button class=\"layui-btn layui-btn-primary layui-border-red\"  onclick='suggestionPro(this)'>客户建议</button></td><tr/>";
             $("#showTable").append(trHTML); //把trHTML的元素插入到id为showTable里头
             console.log(m)
           }
@@ -410,9 +410,37 @@
 </div>
 
 <div id="peopleDuty" th:text="${session.user.eid}" style="display: none"></div>
+<div id="duty" th:text="${session.user.duty}" style="display: none"></div>
 
+<form id="suggest" class="layui-form" style="display: none">
+  <div class="layui-form-item layui-form-text">
+    <label class="layui-form-label">客户建议</label>
+    <div class="layui-input-block">
+      <input id="suggestionClient"   readonly="true" class="layui-input"  />
+    </div>
+  </div>
+</form>
+<form id="eva" class="layui-form" style="display: none">
+  <div class="layui-form-item layui-form-text">
+    <label class="layui-form-label">评价员工对该项目的完成情况</label>
+    <div class="layui-input-block">
+      <textarea id="evaEmPro"   class="layui-textarea"></textarea>
+    </div>
+  </div>
+</form>
 <script src="/layui/layui.js"></script>
 <script>
+  var duty=$("#duty").text();
+  if(duty==="模型"||duty==="渲染"||duty==="后期"){
+    $("#add").hide()  //普通员工不能看见新建项目
+    $("#unfinish").hide() //普通员工不可见派发
+  }
+
+  else if(duty==="前台")
+    $("#unfinish").hide() //普通员工不可见派发
+
+
+  var choosePro;
   const isSelect={  //分配对象
     sid:0,
     send:0,
@@ -514,6 +542,7 @@
 
   function seeAllEmployee($this) {        //查看项目负责员工
     var m=$($this).parent().parent().find("td").eq(1).text(); //把当前行的第1个属性值得到,即项目编号
+    choosePro=m;
     $.ajax({
       type: "post",
       url: "/toseeemployee",
@@ -540,7 +569,7 @@
       $("#showTableToSelect").find("tr").remove()//清空原有表格数据
       for(var item in data){
         var m=data[item];
-        const trHTML="<tr><td>"+m.eid+"</td><td>"+m.name+"</td><td class='layui-hide-v'>"+m.password+"</td><td>"+m.duty+"</td><td>"+m.department+"</td><td>"+m.type+"</td><td>"+m.bMoney+"</td><td>"+m.evaluate+"</td><td>仅供查看</td><tr/>";
+        const trHTML="<tr><td>"+m.eid+"</td><td>"+m.name+"</td><td class='layui-hide-v'>"+m.password+"</td><td>"+m.duty+"</td><td>"+m.department+"</td><td>"+m.type+"</td><td>"+m.bMoney+"</td><td>"+m.evaluate+"</td><td><button class='layui-btn' onclick='suggestToEmployee(this)'>项目评价</button></td><tr/>";
         $("#showTableToSelect").append(trHTML); //把trHTML的元素插入到id为showTable里头
       }
     }
@@ -563,6 +592,85 @@
 
   }
 
+  function suggestToEmployee($this) {//项目建议
+    var m=$($this).parent().parent().find("td").eq(0).text(); //把当前行的第0个属性值得到,即工号
+    var result={
+      id:0,
+      eId:0,
+      pId:0,
+      evaluate:"",
+      suggestion:""
+    }
+    result.eId=m;
+    result.pId=choosePro;
+    layer.open({
+      type:1,
+      area:['700px','400px'],
+      title: '评价完成情况',
+      content: $("#eva"),
+      shade: 0,
+      btn: ['提交']
+      ,btn1: function(index, layero){
+        result.evaluate=$("#evaEmPro").val()
+        $.ajax({
+          type: "post",
+          url: "/prosugupdate",
+          dataType: "text",
+          contentType: "application/json; charset=utf-8",
+          data: JSON.stringify(result),            //result是绩效对象
+          success: function (result) {
+            if (result === "successful")
+              alert("评价成功")
+            else
+              alert("评价失败" + result)
+          }
+        });
+        $('#eva')[0].reset();   //清空表单
+        layer.closeAll();
+      },
+      cancel: function(layero,index){
+        $('#eva')[0].reset();   //清空表单
+        layer.closeAll();
+      }
+
+    });
+  }
+
+  function suggestionPro($this) {//获取当前项目的建议
+    var m=$($this).parent().parent().find("td").eq(1).text(); //把当前行的第1个属性值得到,即项目编号
+    $.ajax({
+      type: "post",
+      url: "/selectsugg",
+      dataType: "text",
+      contentType: "application/text; charset=utf-8",
+      data: m,            //m是项目编号
+      success: function (result) {    //后端获取当前项目绩效里的suggestion,把suggestion字符串传到前端
+                                      // alert(result)
+        $("#suggestionClient").val(result);
+        add(result)
+      }
+    });
+
+    function add(data) {
+      layer.open({
+        type: 1,
+        area: ['700px', '300px'],
+        title: '客户的建议',
+        content: $("#suggest"),
+        shade: 0,
+        btn: ['关闭']
+        , btn1: function (index, layero) {
+          $('#suggest')[0].reset();   //清空表单
+          layer.closeAll();
+        },
+        cancel: function (layero, index) {
+          $('#suggest')[0].reset();   //清空表单
+          layer.closeAll();
+        }
+
+      });
+    }
+  }
   function clearProject($this) {      //重置项目
     var m={
       pId:0,
@@ -571,6 +679,7 @@
       result:""
     }
     m.pId=$($this).parent().parent().find("td").eq(1).text(); //把当前行的第0个属性值得到,即项目编号
+    //alert(m.pId)
     var thisState=$($this).parent().parent().find("td").eq(4).text(); //当前状态
     layer.open({
       type:1,

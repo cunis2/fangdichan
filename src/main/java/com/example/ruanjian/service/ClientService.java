@@ -1,5 +1,6 @@
 package com.example.ruanjian.service;
 
+import com.example.ruanjian.beans.Unit;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import com.example.ruanjian.beans.ClientBean;
@@ -14,4 +15,5 @@ public interface ClientService {
     int updateUser(ClientBean clientBean);
     int addUser(ClientBean clientBean);
     ClientBean queryUserByname(String name);
+    List<ClientBean> queryUserByunit(Unit unit);
 }

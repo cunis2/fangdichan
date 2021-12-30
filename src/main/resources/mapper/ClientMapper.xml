@@ -16,7 +16,7 @@
     </select>
 
     <insert id="addUser" parameterType="com.example.ruanjian.beans.ClientBean">
-        insert into client (cid,name,telephone,qq,email,unit1,unit2,unit3) values (#{cid},#{name},#{telephone},#{qq},#{email},#{unit1},#{unit2},#{unit3})
+        insert into client (cid,name,telephone,qq,email,unit1,unit2,unit3,unit4) values (#{cid},#{name},#{telephone},#{qq},#{email},#{unit1},#{unit2},#{unit3},#{unit4})
     </insert>
 
     <update id="updateUser" parameterType="com.example.ruanjian.beans.ClientBean">
@@ -26,6 +26,15 @@
     <delete id="deleteUser" >
         delete from client where cid = #{cid}
     </delete>
+
+    <select id="queryUserByunit" resultType="com.example.ruanjian.beans.ClientBean" parameterType="com.example.ruanjian.beans.Unit">
+        select * from client where unit1 = #{unit1} and unit2 = #{unit2} and unit3 = #{unit3}
+    </select>
+
+    <select id="queryUserByunit4" resultType="com.example.ruanjian.beans.ClientBean" parameterType="com.example.ruanjian.beans.Unit">
+        select * from client where unit1 = #{unit1} and unit2 = #{unit2} and unit3 = #{unit3} and unit14 = #{unit14}
+    </select>
+
 </mapper>
 
 

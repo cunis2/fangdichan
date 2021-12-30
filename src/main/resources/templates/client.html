@@ -8,28 +8,9 @@
     <script src="/area.js"></script>
 </head>
 <script>
-    $("#dc").click(function (){
-        $.ajax({
-            type: "GET",
-            url: "/pdc",
-            content:"application/text; charset=utf-8",
-            success:function(result){
-                if(result==="successful")
-                    alert("导出成功");
-                else
-                    alert("导出失败")
-            },
-            error:function(data, XMLHttpRequest, textStatus, errorThrown){
-                alert(data);
-                alert(XMLHttpRequest.status);
-                alert(XMLHttpRequest.readyState);
-                alert(textStatus);
-            }
-        });
-    })
     $(document).ready(function() {
         $("#addClient").click(function () {    //添加客户
-
+            $('#test')[0].reset(); //清空表单
             var result = {
                 cid: 0,
                 name: "",
@@ -38,7 +19,8 @@
                 email: "",
                 unit1: "",
                 unit2: "",
-                unit3: ""
+                unit3: "",
+                unit4:""
             }
             layer.open({
                 type: 1,
@@ -64,9 +46,10 @@
                     var value3 = $("#unit3").val();
                     var d3 = value3.split('_');  //去掉_下划线,得到分割后的数据
                     result.unit3 = area2Data[d3[2]].areaName         //县级
+                    result.unit4=$("#myCompany").val()     //公司
                     $.ajax({
                         type: "post",
-                        url: "addClient",
+                        url: "/cadd",
                         dataType: "text",
                         contentType: "application/json; charset=utf-8",
                         data: JSON.stringify(result),
@@ -86,10 +69,11 @@
                     layer.closeAll();
                 },
                 btn2: function (index, layero) {
-                    alert("2222");
+                    $('#test')[0].reset(); //清空表单
                     return false;
                 },
                 cancel: function (layero, index) {
+                    $('#test')[0].reset(); //清空表单
                     layer.closeAll();
                 }
 
@@ -99,11 +83,12 @@
         });
 
 
-       $("#selectAll").click(function () {//三级查询
+       $("#selectAll").click(function () {//四级查询
            var pre={
                unit1:"",
                unit2:"",
-               unit3:""
+               unit3:"",
+               unit4:""
            }
           var valueA=$("#a").val()
            var d1 = valueA.split('_');  //去掉_下划线,得到分割后的数据
@@ -114,10 +99,11 @@
            var valueC=$("#c").val()
            var d3 = valueC.split('_');  //去掉_下划线,得到分割后的数据
            pre.unit3=area2Data[d3[2]].areaName;
+           pre.unit4=selectCompany;
            console.log(pre)
            $.ajax({
                type: "post",
-               url: "/selectClients",
+               url: "/cselectByUnit",
                dataType: "text",
                contentType: "application/json; charset=utf-8",
                data: JSON.stringify(pre),                          //前端三级级联查询对象
@@ -136,12 +122,13 @@
                    email: "",
                    unit1: "",
                    unit2: "",
-                   unit3: ""
+                   unit3: "",
+                   unit4:""
                }
                $("#showTable").find("tr").remove()//清空原有表格数据
                for (var item in data) {
                    m = data[item];
-                   const trHTML = "<tr><td>" + m.cid + "</td><td>" + m.name + "</td><td>" + m.telephone + "</td><td>" + m.qq + "</td><td>" + m.email + "</td><td>" + m.unit1 + "</td><td>" + m.unit2 + "</td><td>" + m.unit3 + "</td><td><button class=\"layui-btn layui-btn-primary layui-border-red\"  onclick='delTr(this)'>删除</button></td><tr/>";
+                   const trHTML = "<tr><td>" + m.cid + "</td><td>" + m.name + "</td><td>" + m.telephone + "</td><td>" + m.qq + "</td><td>" + m.email + "</td><td>" + m.unit1 + "</td><td>" + m.unit2 + "</td><td>" + m.unit3 + "</td><td>" + m.unit4 + "</td><td><button class=\"layui-btn layui-btn-primary layui-border-red\"  onclick='delTr(this)'>删除</button></td><tr/>";
                    $("#showTable").append(trHTML); //把trHTML的元素插入到id为showTable里头
                    console.log(m)
                }
@@ -151,7 +138,7 @@
 
         $("#showAllClient").click(function () {   //刷新客户表
             $.ajax({
-                url: "/form3", //获取数据列
+                url: "/cselect", //获取数据列
                 type: 'GET',
                 success: function (data) {
                     add(data)
@@ -167,12 +154,13 @@
                     email: "",
                     unit1: "",
                     unit2: "",
-                    unit3: ""
+                    unit3: "",
+                    unit4:""
                 }
                 $("#showTable").find("tr").remove()//清空原有表格数据
                 for (var item in data) {
                     m = data[item];
-                    const trHTML = "<tr><td>" + m.cid + "</td><td>" + m.name + "</td><td>" + m.telephone + "</td><td>" + m.qq + "</td><td>" + m.email + "</td><td>" + m.unit1 + "</td><td>" + m.unit2 + "</td><td>" + m.unit3 + "</td><td><button class=\"layui-btn layui-btn-primary layui-border-red\"  onclick='delTr(this)'>删除</button></td><tr/>";
+                    const trHTML = "<tr><td>" + m.cid + "</td><td>" + m.name + "</td><td>" + m.telephone + "</td><td>" + m.qq + "</td><td>" + m.email + "</td><td>" + m.unit1 + "</td><td>" + m.unit2 + "</td><td>" + m.unit3 + "</td><td>" + m.unit4 + "</td><td><button class=\"layui-btn layui-btn-primary layui-border-red\"  onclick='delTr(this)'>删除</button></td><tr/>";
                     $("#showTable").append(trHTML); //把trHTML的元素插入到id为showTable里头
                     console.log(m)
                 }
@@ -186,7 +174,6 @@
 </script>
 <button id="showAllClient" class="layui-btn">查看全部客户</button>
 <button id="addClient" class="layui-btn">录入客户信息</button>
-<button id="dc" class="layui-btn">导出客户信息</button>
 <form class="layui-form">
 <div class="layui-form-item">
     <label class="layui-form-label">选择地区</label>
@@ -205,6 +192,11 @@
             <option value="">请选择县/区</option>
         </select>
     </div>
+    <div class="layui-input-inline" style="display: none;">
+        <select id="d" name="company" lay-filter="company">
+            <option value="">请选择公司</option>
+        </select>
+    </div>
 </div>
 
 </form>
@@ -219,6 +211,7 @@
         <td>一级单位</td>
         <td>二级单位</td>
         <td>三级单位</td>
+        <td>四级单位</td>
         <td>操作</td>
     </tr>
     <tbody id="showTable" >
@@ -231,6 +224,7 @@
         <td>重庆市</td>
         <td>重庆交通大学</td>
         <td>四班</td>
+        <td>13号</td>
         <td>
             <button class="layui-btn layui-btn-primary layui-border-red" >删除</button>
         </td>
@@ -281,10 +275,17 @@
             </select>
         </div>
     </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">公司单位</label>
+        <div class="layui-input-block">
+            <input id="myCompany" type="text" lay-verify="require" class="layui-input">
+        </div>
+    </div>
 </form>
 
 <script src="/layui/layui.js"></script>
 <script>
+    var selectCompany=""; //选择查询的公司
     //初始数据
     var areaData = Area;
     var area1Data;
@@ -315,14 +316,14 @@
             var count = d[1];
             var index = d[2];
             if (count > 0) {
-                loadCity(areaData[index].mallCityList);
+                loadCity(areaData[index].mallCityList,areaData[index].provinceName);
             } else {
                 $form.find('select[name=city]').parent().hide();
             }
         });
     }
     //加载市数据
-    function loadCity(citys) {
+    function loadCity(citys,provinceName ) {
         area1Data=citys;
         var cityHtml = '';
         for (var i = 0; i < citys.length; i++) {
@@ -337,14 +338,14 @@
             var count = d[1];
             var index = d[2];
             if (count > 0) {
-                loadArea(citys[index].mallAreaList);
+                loadArea(provinceName,citys[index].mallAreaList,citys[index].cityName);
             } else {
                 $form.find('select[name=area]').parent().hide();
             }
         });
     }
     //加载县/区数据
-    function loadArea(areas) {
+    function loadArea(provinceName,areas,cityName) {
         area2Data=areas;
         var areaHtml = '';
         for (var i = 0; i < areas.length; i++) {
@@ -353,10 +354,50 @@
         $form.find('select[name=area]').html(areaHtml).parent().show();
         form.render();
         form.on('select(area)', function(data) {
-            //console.log(data);
+            var value = data.value;
+            var d = value.split('_');
+            var code = d[0];
+            var count = d[1];
+            var index = d[2];
+            if (count > 0) {
+                loadCompany(provinceName,cityName,areas[index].areaName); //打开选择
+            } else {
+                $form.find('select[name=company]').parent().hide();
+            }
         });
     }
+    //加载公司
+function loadCompany(provinceName,cityName,areaName) {      //选择公司
+    var pre={
+        unit1:"",
+        unit2:"",
+        unit3:"",
+        unit4:""
+    }
+    pre.unit1=provinceName
+    pre.unit2=cityName
+    pre.unit3=areaName
 
+    $.ajax({
+        type: "post",
+        url: "/needCompany",
+        dataType: "text",
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify(pre),            //传给后端pre即unit对象
+        success: function (result) {    //得到的客户list,即改地区所有客户
+            var data=JSON.parse(result)      //得到的该员工的项目list转成对象
+            var areaHtml = '';
+            for (var i = 0; i < data.length; i++) {
+                areaHtml += '<option value="' + data[i].unit4 + '">' + data[i].unit4 + '</option>';
+            }
+            $form.find('select[name=company]').html(areaHtml).parent().show();
+            form.render();
+            form.on('select(company)', function(data) {
+                selectCompany=data.value;
+            })
+        }
+    });
+}
 
     function delTr($this){
         $($this).parent().parent().remove();
@@ -365,7 +406,7 @@
         console.log(m)
         $.ajax({
             type: "post",
-            url: "/deleteClient",
+            url: "/cdelete",
             dataType: "text",
             contentType: "application/text; charset=utf-8",
             data: m,            //m客户号

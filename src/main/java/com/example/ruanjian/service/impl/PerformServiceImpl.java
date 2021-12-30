@@ -47,4 +47,16 @@ public class PerformServiceImpl implements PerformService {
         performMapper.update(performBean);
         return 1;
     }
+
+    @Override
+    public int updatesuggesstion(PerformBean performBean) {
+        performMapper.updatesuggesstion(performBean);
+        return 1;
+    }
+
+    @Override
+    public int updateallsugg(PerformBean performBean) {
+        performMapper.updateallsugg(performBean);
+        return 1;
+    }
 }

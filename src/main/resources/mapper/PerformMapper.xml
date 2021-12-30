@@ -17,7 +17,13 @@
     <insert id="insert" parameterType="com.example.ruanjian.beans.PerformBean">
         insert into perform value (#{id},#{eId},#{pId},#{evaluate},#{suggestion})
     </insert>
+    <update id="updateallsugg" parameterType="com.example.ruanjian.beans.PerformBean">
+        update perform set suggestion=#{suggestion} where pid=#{pId}
+    </update>
     <update id="update" parameterType="com.example.ruanjian.beans.PerformBean">
         update perform set evaluate=#{evaluate} where eid=#{eId} and pid=#{pId}
+    </update>
+    <update id="updatesuggesstion" parameterType="com.example.ruanjian.beans.PerformBean">
+        update perform set suggestion=#{suggestion} where eid=#{eId} and pid=#{pId}
     </update>
 </mapper>

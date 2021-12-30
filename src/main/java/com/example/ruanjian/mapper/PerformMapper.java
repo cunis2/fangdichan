@@ -15,4 +15,6 @@ public interface PerformMapper {
     int deleteBypid(PerformBean performBean);//删除
     int insert(PerformBean performBean);//插入
     int update(PerformBean performBean);//修改打分
+    int updatesuggesstion(PerformBean performBean);//修改建议
+    int updateallsugg(PerformBean performBean);//全部建议
 }
