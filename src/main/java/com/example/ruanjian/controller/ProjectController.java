@@ -82,33 +82,80 @@ public class ProjectController {
     @RequestMapping("/changestate")
     @ResponseBody
     public String changestate(@RequestBody Suggesstion suggesstion,HttpSession session){
-        ProjectBean projectBean = projectService.selectProjectByPid(suggesstion.getpId());
-        projectBean.setState(suggesstion.getState());
-        projectService.updateProject(projectBean);
+        int oldState = suggesstion.getOldState();
+        int state = suggesstion.getState();
         PerformBean performBean = new PerformBean();
-        performBean.setpId(suggesstion.getpId());
-        String suggestion = suggesstion.getSuggestion();
-        performBean.setSuggestion(suggestion);
-        EmployeeBean bean = (EmployeeBean) session.getAttribute("user");
-        String department = bean.getDepartment();
-        List<EmployeeBean> list = employeeService.selectBydepartment(department);
+        int i = suggesstion.getpId();
+        EmployeeBean employeeBean = (EmployeeBean) session.getAttribute("user");
+        String department = employeeBean.getDepartment();
+        performBean.setpId(i);
+        SessionBean sessionBean = new SessionBean();
+        sessionBean.setPid(i);
+        sessionBean.setState("接受");
+        ProjectBean projectBean = projectService.selectProjectByPid(i);
+        String sta;
+        if (suggesstion.getState()==1){
+            sta = "建模中";
+        }
+        else if(suggesstion.getState()==2){
+            sta = "渲染中";
+        }else if(suggesstion.getState()==3){
+            sta = "后期中";
+        }else {
+            sta = "已完成";
+        }
+        projectBean.setState(sta);
+        projectService.updateProject(projectBean);
+        String s ;
         int eid = 0;
-        String sl = department+"主管";
-        for (EmployeeBean e :
-                list) {
-            if (Objects.equals(e.getDuty(), sl)) {
-                eid = e.getEid();
-                break;
+        if(state>oldState){//交付
+            if(oldState==1){department = "模型部门";}
+            if(oldState==2){department = "渲染部门";}
+            if(oldState==3){department = "后期部门";}
+            s = department+"主管";
+            List<EmployeeBean> list = employeeService.selectBydepartment(department);
+            for (EmployeeBean e :
+                    list) {
+                if (Objects.equals(e.getDuty(), s)){
+                    eid = e.getEid();
+                    break;
+                }
+            }
+            sessionBean.setSend(eid);
+            List<SessionBean> sessionBeans = sessionService.selectdeBypid(sessionBean);
+            for (SessionBean bean   :
+                  sessionBeans  ) {
+                int receive = bean.getReceive();
+                performBean.setSuggestion(suggesstion.getSuggestion());
+                performBean.seteId(receive);
+                performService.updatesuggesstion(performBean);
             }
         }
-        SessionBean sessionBean = new SessionBean();
-        sessionBean.setPid(suggesstion.getpId());
-        sessionBean.setSend(eid);
-        List<SessionBean> sessionBeans = sessionService.selectdeBypid(sessionBean);
-        for (SessionBean s :
-                sessionBeans) {
-            performBean.seteId(s.getReceive());
-            performService.updatesuggesstion(performBean);
+        if(state<=oldState){//重制
+            for(int j = oldState;j>=state;j--){
+                if(j==3){ department="后期部门";}
+                if(j==2){ department="渲染部门";}
+                if(j==1){department="模型部门";}
+                s = department+"主管";
+                List<EmployeeBean> list = employeeService.selectBydepartment(department);
+                for (EmployeeBean e :
+                        list) {
+                    if (Objects.equals(e.getDuty(), s)){
+                        eid = e.getEid();
+                        break;
+                    }
+                }
+                sessionBean.setSend(eid);
+                List<SessionBean> sessionBeans = sessionService.selectdeBypid(sessionBean);
+                for (SessionBean bean   :
+                        sessionBeans  ) {
+                    int receive = bean.getReceive();
+                    performBean.seteId(receive);
+                    performBean.setSuggestion(suggesstion.getSuggestion());
+                    System.out.println(s+performBean);
+                    performService.updatesuggesstion(performBean);
+                }
+            }
         }
         return "successful";
     }

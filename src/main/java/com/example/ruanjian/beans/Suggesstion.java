@@ -10,20 +10,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 @NoArgsConstructor
 public class Suggesstion {
     int pId;       //目的项目
-    String state;   //更改后状态
+    int state;   //更改后状态
     String suggestion;  //原因
     String result;    //更改结果：交付or重置
-
+    int oldState; //当前状态
     public void setPid(int pid) {
         this.pId = pid;
     }
 
-    public String getState() {
+    public int getState() {
         return state;
     }
 
-    public void setState(String state) {
+    public void setState(int state) {
         this.state = state;
+    }
+
+    public int getOldState() {
+        return oldState;
+    }
+
+    public void setOldState(int oldState) {
+        this.oldState = oldState;
     }
 
     public String getSuggestion() {

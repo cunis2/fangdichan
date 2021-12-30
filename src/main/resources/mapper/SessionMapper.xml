@@ -6,7 +6,7 @@
         insert into session values (#{sid},#{send},#{receive},#{pid},#{state})
     </insert>
     <select id="selectdeBypid" resultType="com.example.ruanjian.beans.SessionBean">
-        select * from session where pid=#{pid} and send=#{send}
+        select * from session where pid=#{pid} and send=#{send} and state=#{state}
     </select>
     <select id="selectIs" resultType="com.example.ruanjian.beans.SessionBean">
         select * from session where state="未接受"
