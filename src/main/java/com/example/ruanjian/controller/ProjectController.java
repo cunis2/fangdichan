@@ -36,6 +36,8 @@ public class ProjectController {
     PerformService performService;
     @Autowired
     EmployeeService employeeService;
+    @Autowired
+    UrlService urlService;
     @RequestMapping(value = "/select")
     @ResponseBody
     public List<ProjectBean> queryProjectList(){
@@ -218,6 +220,16 @@ public class ProjectController {
         apportion.setaState("未分配");
         apportion.setlState("未分配");
         apportionService.insert(apportion);
+        Url url= new Url();
+        url.setpId(projectBean.getpId());
+        url.setUrl1(null);
+        url.setUrl2(null);
+        url.setUrl3(null);
+        url.setUrl4(null);
+        url.setUrl5(null);
+        url.setUrl6(null);
+        url.setUrl7(null);
+        urlService.inserturl(url);
         return "successful";
     }
     @RequestMapping("/selectstate")

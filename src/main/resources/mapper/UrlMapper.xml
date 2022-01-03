@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.ruanjian.mapper.UrlMapper">
+    <select id="selectbyid" resultType="com.example.ruanjian.beans.Url">
+        select * from url where pid=#{pId}
+    </select>
+    <insert id="inserturl" parameterType="com.example.ruanjian.beans.Url">
+        insert into url (pid,url1,url2,url3,url4,url5,url6,url7) values (#{pId},#{url1},#{url2},#{url3},#{url4},#{url5},#{url6},#{url7})
+    </insert>
+</mapper>
