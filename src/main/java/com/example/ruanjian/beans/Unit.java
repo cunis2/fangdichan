@@ -1,10 +1,17 @@
 package com.example.ruanjian.beans;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Unit {
     String unit1;
     String unit2;
     String unit3;
-
+    String unit4;
     @Override
     public String toString() {
         return "unit{" +
@@ -12,6 +19,14 @@ public class Unit {
                 ", unit2='" + unit2 + '\'' +
                 ", unit3='" + unit3 + '\'' +
                 '}';
+    }
+
+    public String getUnit4() {
+        return unit4;
+    }
+
+    public void setUnit4(String unit4) {
+        this.unit4 = unit4;
     }
 
     public String getUnit1() {

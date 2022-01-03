@@ -1,18 +1,14 @@
 package com.example.ruanjian.controller;
 
-import com.alibaba.excel.EasyExcel;
-import com.example.ruanjian.beans.ClientBean;
 import com.example.ruanjian.beans.ClientBean;
 import com.example.ruanjian.beans.Unit;
-import com.example.ruanjian.mapper.ClientMapper;
 import com.example.ruanjian.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpSession;
-import java.util.List;
+import javax.swing.text.html.HTMLDocument;
+import java.util.*;
 
 @Controller
 public class ClientController {
@@ -45,19 +41,94 @@ public class ClientController {
     @ResponseBody
     public List<ClientBean> un(@RequestBody Unit unit){
         System.out.println(unit);
-        List<ClientBean> list = clientService.queryUserByunit(unit);
+        List<ClientBean> list = clientService.queryUserByunit4(unit);
         for (ClientBean c:
                 list
-        ) {
+             ) {
+            System.out.println(c);
+        }
+
+        return list;
+    }
+    @RequestMapping("/cselectByUnit4")
+    @ResponseBody
+    public List<ClientBean> un4(@RequestBody Unit unit){
+
+        List<ClientBean> list =new LinkedList<ClientBean>();
+                list=clientService.queryUserByunit(unit);
+       String s;
+        int e[] = new int [list.size()];
+        for(int i=0;i<list.size();i++)
+        {
+            e[i]=-1;
+        }
+        int i=0,l=0,j=0;
+            for (ClientBean c :
+                    list
+            ) {
+                j=0;
+                s = c.getUnit4();
+                for (ClientBean d : list
+                ) {
+                    if(d.getUnit4().equals(s)&&i!=j){
+                        e[l]=j;
+                        l++;
+                    }
+                    j++;
+                }
+                i++;
+            }
+        int k=0;
+            j=0;
+            int p=0;
+            for(i=0;i<list.size();i++){
+                if(e[i]==-1){
+                    break;
+                }
+                for(j=i+1;j<list.size();j++){
+                    if(e[j]<e[i]){
+                        p=e[i];
+                        e[i]=e[j];
+                        e[j]=p;
+
+                    }
+                }
+            }
+        for(i=0;i<list.size();i++)
+        {
+            if(e[i]==-1)
+            {
+                break;
+            }
+            for(j=i+1;j<list.size();j++)
+            {
+                if(e[i]==e[j])
+                {
+                    e[j]=999;
+                }
+            }
+        }
+        for(i=0;i<list.size();i++)
+        {
+            if(e[i]==-1)
+            {
+                break;
+            }
+            if(e[i]!=999){
+            list.remove(e[i]);
+            for(k=0;k<list.size();k++) {
+                if (e[k] != -1&&e[k]!=999) {
+
+                    e[k]--;
+                }
+            }
+            }
+        }
+        for (ClientBean c:list
+             ) {
             System.out.println(c);
         }
         return list;
-    }
-    @RequestMapping("/cdc")
-    @ResponseBody
-    public String cdc(){
-        EasyExcel.write("导出员工信息.xlsx",ClientBean.class).sheet().doWrite(queryUserlist());
-        return "successful";
     }
     @RequestMapping("/cselectBy")
     @ResponseBody

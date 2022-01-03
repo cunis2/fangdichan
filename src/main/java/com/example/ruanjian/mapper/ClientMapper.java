@@ -23,4 +23,6 @@ public interface ClientMapper {
 
     List<ClientBean> queryUserByunit(Unit unit);
 
+    List<ClientBean> queryUserByunit4(Unit unit);
+
 }

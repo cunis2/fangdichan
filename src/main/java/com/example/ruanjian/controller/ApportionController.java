@@ -1,10 +1,7 @@
 package com.example.ruanjian.controller;
 
 import com.example.ruanjian.beans.*;
-import com.example.ruanjian.service.ApportionService;
-import com.example.ruanjian.service.EmployeeService;
-import com.example.ruanjian.service.ProjectService;
-import com.example.ruanjian.service.SessionService;
+import com.example.ruanjian.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.stereotype.Controller;
@@ -28,6 +25,29 @@ public class ApportionController {
     }
     @Autowired
     SessionService sessionService;
+    @Autowired
+    EmployeeService employeeService;
+    @Autowired
+    ProjectService projectService;
+    @Autowired
+    PerformService performService;
+    @RequestMapping("/updaterefuse")
+    @ResponseBody
+    public String updaterefuse(@RequestBody refuse refuse,HttpSession session){
+        Apportion apportion = new Apportion();
+        EmployeeBean user = (EmployeeBean) session.getAttribute("user");
+        SessionBean sessionBean = new SessionBean();
+        sessionBean.setPid(refuse.getpId());
+        sessionBean.setSend(user.getEid());
+        sessionBean.setState("接受");
+        sessionBean.setReceive(refuse.geteId());
+        sessionService.updateaccecpt(sessionBean);
+        PerformBean performBean = new PerformBean();
+        performBean.seteId(refuse.geteId());
+        performBean.setpId(refuse.getpId());
+        performService.insert(performBean);
+        return "successful";
+    }
     @RequestMapping("/aupdate")
     @ResponseBody
     public String update(@RequestBody SessionBean s, HttpSession session){
@@ -48,10 +68,7 @@ public class ApportionController {
         apportionService.update(apportion);
         return "successful";
     }
-    @Autowired
-    EmployeeService employeeService;
-    @Autowired
-    ProjectService projectService;
+
     @RequestMapping("/aselect")
     @ResponseBody
     public List<ProjectBean> selectall(HttpSession session){

@@ -103,7 +103,7 @@
            console.log(pre)
            $.ajax({
                type: "post",
-               url: "/cselectByUnit",
+               url: "cselectByUnit",
                dataType: "text",
                contentType: "application/json; charset=utf-8",
                data: JSON.stringify(pre),                          //前端三级级联查询对象
@@ -380,7 +380,7 @@ function loadCompany(provinceName,cityName,areaName) {      //选择公司
 
     $.ajax({
         type: "post",
-        url: "/needCompany",
+        url: "/cselectByUnit4",
         dataType: "text",
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify(pre),            //传给后端pre即unit对象

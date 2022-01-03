@@ -6,17 +6,24 @@ import com.example.ruanjian.config.FileConfig;
 import com.example.ruanjian.service.*;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 @Controller
 public class ProjectController {
+    int PID;
+    @Value("${web.upload-path}")
+    //保存文件的路径，该路径有http访问权限
+    private String staticPath;
     @Autowired
     private ProjectService projectService;
     @Autowired
@@ -79,6 +86,7 @@ public class ProjectController {
         EasyExcel.write("项目表.xlsx",ProjectBean.class).sheet().doWrite(queryProjectList());
         return "successful";
     }
+
     @RequestMapping("/changestate")
     @ResponseBody
     public String changestate(@RequestBody Suggesstion suggesstion,HttpSession session){
@@ -272,16 +280,34 @@ public class ProjectController {
         }
         return l;
     }
+    @RequestMapping("/getpid")
+    @ResponseBody
+    public String getipid(@RequestBody String pid){
+        PID= Integer.parseInt(pid);
+        return "successful";
+    }
     @RequestMapping(value = "upload" ,method = RequestMethod.POST)
     @ResponseBody
-    public Object  aa(@RequestBody MultipartFile file){     //接收前台文件
-        System.out.println(file);
+    public Object  aa(@RequestBody MultipartFile file, HttpServletRequest request)throws UnknownHostException {     //接收前台文件
         ProjectBean bean = projectService.selectByUrl("null");
-        String s;
         ClientBean clientBean = clientService.queryUserById(bean.getcId());
-        s=bean.getpName()+"-"+clientBean.getName()+"-"+clientBean.getUnit3()+"-"+bean.getbTime();
-        String url=FileConfig.saveFileReturnUrl(file,s,"资料","");
+        String s = "project"+bean.getpId()+clientBean.getName();
+        String url=FileConfig.saveFileReturnUrl(file,staticPath,s,"中文","c",request);
         System.out.println("文件路径："+url);
+        bean.setDataUrl(s);
+        projectService.updateProject(bean);
+        JSONObject resObj = new JSONObject();
+        resObj.put("msg","ok");
+        return resObj;
+    }
+    @RequestMapping(value = "eupload" ,method = RequestMethod.POST)
+    @ResponseBody
+    public Object  aaa(@RequestBody MultipartFile file, HttpServletRequest request,HttpSession session)throws UnknownHostException {     //接收前台文件
+        ProjectBean projectBean = projectService.selectProjectByPid(PID);
+        String s = projectBean.getDataUrl();
+        EmployeeBean user = (EmployeeBean) session.getAttribute("user");
+        String department = user.getDepartment();
+        String url=FileConfig.saveFileReturnUrl(file,staticPath,s,department,"原始文件",request);
         JSONObject resObj = new JSONObject();
         resObj.put("msg","ok");
         return resObj;

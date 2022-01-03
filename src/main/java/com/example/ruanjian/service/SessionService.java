@@ -19,5 +19,6 @@ public interface SessionService {
     int updateaccecpt(SessionBean sessionBean);//接受
     int updaterefuse(SessionBean sessionBean);//拒绝
     List<SessionBean> selectdeBypid(SessionBean sessionBean);//查询一个部门内接受项目
+    List<SessionBean> selectrefuse(SessionBean sessionBean);//查询拒绝的
 
 }

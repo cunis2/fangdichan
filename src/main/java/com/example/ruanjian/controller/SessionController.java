@@ -1,6 +1,11 @@
 package com.example.ruanjian.controller;
 
+import com.example.ruanjian.beans.EmployeeBean;
+import com.example.ruanjian.beans.ProjectBean;
 import com.example.ruanjian.beans.SessionBean;
+import com.example.ruanjian.beans.refuse;
+import com.example.ruanjian.service.EmployeeService;
+import com.example.ruanjian.service.ProjectService;
 import com.example.ruanjian.service.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -9,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -16,6 +22,37 @@ import java.util.List;
 public class SessionController {
     @Autowired
     SessionService sessionService;
+    @Autowired
+    EmployeeService employeeService;
+    @Autowired
+    ProjectService projectService;
+    @RequestMapping("/sessionrefuse")
+    @ResponseBody
+    public List<refuse> selectrefuse(HttpSession session){
+        EmployeeBean user = (EmployeeBean) session.getAttribute("user");
+        SessionBean sessionBean = new SessionBean();
+        sessionBean.setSend(user.getEid());
+        List<SessionBean> selectrefuse = sessionService.selectrefuse(sessionBean);
+        refuse refuse = new refuse();
+        List<refuse> l = new ArrayList<>();
+        System.out.println(selectrefuse);
+        for (SessionBean s :
+                selectrefuse) {
+            refuse.seteId(s.getReceive());
+            EmployeeBean employeeBean = employeeService.selectByid(s.getReceive());
+            refuse.seteName(employeeBean.getName());
+            ProjectBean projectBean = projectService.selectProjectByPid(s.getPid());
+            refuse.setpName(projectBean.getpName());
+            refuse.setpId(s.getPid());
+            refuse.setState(s.getState());
+            l.add(refuse);
+        }
+        for (refuse r :
+                l) {
+            System.out.println(r);
+        }
+        return l;
+    }
     @RequestMapping("/sesionseis")
     @ResponseBody
     public List<SessionBean> selectIs(HttpSession session) {

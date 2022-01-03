@@ -71,4 +71,10 @@ public class SessionServiceImpl implements SessionService {
         List<SessionBean> l = sessionMapper.selectdeBypid(sessionBean);
         return l;
     }
+
+    @Override
+    public List<SessionBean> selectrefuse(SessionBean sessionBean) {
+        List<SessionBean> list = sessionMapper.selectrefuse(sessionBean);
+        return list;
+    }
 }

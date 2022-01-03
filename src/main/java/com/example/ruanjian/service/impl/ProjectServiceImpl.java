@@ -19,28 +19,24 @@ public class ProjectServiceImpl implements ProjectService{
     @Override
     public int insertProject(ProjectBean projectBean) {
         int i = projectMapper.insertProject(projectBean);
-        System.out.println(i);
         return i;
     }
 
     @Override
     public int updateProject(ProjectBean projectBean) {
         int i=projectMapper.updateProject(projectBean);
-        System.out.println(i);
         return i;
     }
 
     @Override
     public int deleteProjectByPid(Integer pid) {
         int i = projectMapper.deleteProjectByPid(pid);
-        System.out.println(i);
         return i;
     }
 
     @Override
     public ProjectBean selectProjectByPid(Integer pid) {
         ProjectBean projectBean = projectMapper.selectProjectByPid(pid);
-        System.out.println(projectBean);
         return projectBean;
     }
 

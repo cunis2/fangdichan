@@ -84,7 +84,7 @@
             else
               flag=0
             var trHTML="<tr><td>"+m.pName+"</td><td>"+m.pId+"</td><td>"+m.cId+"</td><td>"+m.dataUrl+"</td><td>"+m.state+"</td><td>"+m.price+"</td><td>"+m.mPrinciple+"</td><td>"+m.aPrinciple+"</td><td>"+m.lPrinciple+"</td><td>"+m.bTime+"</td><td>"+m.eTime+"</td><td>"+m.type+"</td><td><div><div><label>"+flag+"%</label></div><progress value= '"+flag+"'  max= '100' ></progress></div>" +
-                    "</td><td><a href='"+m.dataUrl+"' download='test' class=\"layui-btn\">下载项目</a><button onclick='uploads(this)' class=\"layui-btn layui-btn-warm\">上传项目</button><button class=\"layui-btn layui-btn-primary layui-border-red\"  onclick='suggestionPro(this)'>客户建议</button></td><tr/>";
+                    "</td><td><a href='"+m.dataUrl+"' download='test' class=\"layui-btn\">下载项目</a><button onclick='uploadEmployeeFile(this)' class=\"layui-btn layui-btn-warm\">上传项目</button><button class=\"layui-btn layui-btn-primary layui-border-red\"  onclick='suggestionPro(this)'>客户建议</button></td><tr/>";
             $("#showTable").append(trHTML); //把trHTML的元素插入到id为showTable里头
             console.log(m)
           }
@@ -196,6 +196,50 @@
 
       });
 
+      $("#refuse").click(function () {      //查看已经拒绝的员工项目信息
+        $.ajax({
+          url: "/sessionrefuse", //获取数据列
+          type: 'GET',
+          success: function (data) {
+            add(data)
+          }
+        });
+
+        function add(data) {
+          var m={
+            pName:"",
+            pId:0,
+            eName:"",
+            eId:"",
+            state:"已拒绝"
+          }
+          $("#showRefuseTable").find("tr").remove()//清空原有表格数据
+          for(var item in data){
+            m=data[item];
+            var trHTML="<tr><td>"+m.pName+"</td><td>"+m.pId+"</td><td>"+m.eName+"</td><td>"+m.eId+"</td><td>"+m.state+"</td></td><td><button class=\"layui-btn layui-btn-primary layui-border-red\"  onclick='reGive(this)'>重新派发</button></td><tr/>";
+            $("#showRefuseTable").append(trHTML); //把trHTML的元素插入到id为showTable里头
+            console.log(m)
+          }
+        }
+        layer.open({
+          type:1,
+          area:['500px','600px'],
+          title: '已拒绝的项目员工信息',
+          content: $("#refuseTable"),
+          shade: 0,
+          btn: ['关闭']
+          ,btn1: function(index, layero){
+
+            layer.closeAll();
+          },
+          cancel: function(layero,index){
+            layer.closeAll();
+          }
+
+        });
+      })
+
+
 
       $("#btn").click(function() {   //刷新项目表
         $.ajax({
@@ -270,7 +314,7 @@
 <button id="unfinish" class="layui-btn">未派发任务</button>
 <button id="receive" class="layui-btn">我的项目</button>
 <button id="newReceive" class="layui-btn">新收到的项目</button>
-<button class="layui-btn" id="dc">导出项目数据</button>
+<button id="refuse" class="layui-btn layui-btn-primary layui-border-red">已拒绝</button>
 <table class="layui-table">
   <tr>
     <td>项目名称</td>
@@ -313,7 +357,28 @@
   </tbody>
 </table>
 
-
+<table id="refuseTable" class="layui-table" style="display: none">
+  <tr>
+    <td>项目名称</td>
+    <td>项目编号</td>
+    <td>员工名称</td>
+    <td>员工工号</td>
+    <td>接受状态</td>
+    <td>操作</td>
+  </tr>
+  <tbody id="showRefuseTable" >
+  <tr>
+    <td>房地产</td>
+    <td>1</td>
+    <td>刘伟</td>
+    <td>1</td>
+    <td>已拒绝</td>
+    <td>
+      <button class="layui-btn layui-btn-primary layui-border-red" >重新派发</button>
+    </td>
+  </tr>
+  </tbody>
+</table>
 
 <form class="layui-form" id="test" style="display:none" enctype="multipart/form-data">
   <div class="layui-form-item">
@@ -403,8 +468,8 @@
     </div>
   </div>
 </form>
-<button style="display:none"  type="button" class="layui-btn" id="test1">上传图片</button>
-
+<button id="test1" style="display: none" class="layui-btn test" lay-data="{url: '/upload/',accept: 'file'}">上传文件</button>
+<button id="test2" style="display: none" class="layui-btn test" lay-data="{url: '/uploadEmployeeFiles/', accept: 'file'}">上传文件</button>
 <div id="getSession" style="display:none">
   [[${session.user}]]
 </div>
@@ -448,6 +513,35 @@
     pid:0,
     state:"未接受"
   }
+
+  function reGive($this) {      //重新派发
+    $($this).parent().parent().remove();    //分发一个删除一个
+    var a=$($this).parent().parent().find("td").eq(1).text(); //把当前行的第1个属性值得到,即项目号
+    var b=$($this).parent().parent().find("td").eq(3).text(); //工号
+    var m={
+      pName:"",
+      pId:0,
+      eName:"",
+      eId:"",
+      state:"已重新派发"
+    }
+    m.eId=b;
+    m.pId=a;
+    $.ajax({
+      type: "post",
+      url: "updaterefuse",
+      dataType: "text",
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify(m),
+      success:function(result){
+        if(result==="successful")
+          alert("发送成功");
+        else
+          alert("发送失败")
+      }
+    });
+  }
+
   function toGive($this) {        //分发任务事件
     $($this).parent().parent().remove();    //分发一个删除一个
     var m=$($this).parent().parent().find("td").eq(1).text(); //把当前行的第0个属性值得到,即项目编号
@@ -601,8 +695,8 @@
       evaluate:"",
       suggestion:""
     }
-    result.eId=m;
-    result.pId=choosePro;
+    result.eid=m;
+    result.pid=choosePro;
     layer.open({
       type:1,
       area:['700px','400px'],
@@ -721,7 +815,7 @@
         else m.result="重置"
         $.ajax({
           type: "post",
-          url: "changestate",
+          url: "/changestate",
           dataType: "text",
           contentType: "application/json; charset=utf-8",
           data: JSON.stringify(m),            //m是项目
@@ -742,6 +836,36 @@
     });
   }
 
+  function uploadEmployeeFile($this) {//上传员工文件
+    var m=$($this).parent().parent().find("td").eq(1).text(); //把当前行的第1个属性值得到,即项目编号
+    $.ajax({
+      type: "post",
+      url: "/getpid",
+      dataType: "text",
+      contentType: "application/text; charset=utf-8",
+      data: m,            //m是项目编号
+      success: function (result) {
+        console.log(result)
+      }
+    });
+    layer.open({
+      type:1,
+      area:['300px','200px'],
+      title: '文件',
+      content: $("#test2"),
+      shade: 0,
+      btn: ['关闭']
+      ,btn1: function(index, layero){
+
+        layer.closeAll();
+      },
+      cancel: function(layero,index){
+        layer.closeAll();
+      }
+
+    });
+
+  }
   function  uploadFile() {  //上传项目文件
     layer.open({
       type:1,
@@ -762,17 +886,13 @@
   }
   layui.use('upload', function(){
     var upload = layui.upload;
-
     //执行实例
     var uploadInst = upload.render({
-      elem: '#test1' //绑定元素
-      ,url: '/upload' //上传接口
-      ,done: function(res){
-        alert("文件上传成功！")
-        //上传完毕回调
-      }
-      ,error: function(){
-        //请求异常回调
+      elem: '.test'
+      ,done: function(res, index, upload){
+        //获取当前触发上传的元素，一般用于 elem 绑定 class 的情况，注意：此乃 layui 2.1.0 新增
+        var item = this.item;
+        alert("文件上传成功")
       }
     });
   });

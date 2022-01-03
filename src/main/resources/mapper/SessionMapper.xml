@@ -29,4 +29,7 @@
     <update id="updateaccecpt" parameterType="com.example.ruanjian.beans.SessionBean">
         update session set state=#{state} where receive=#{receive} and pid=#{pid}
     </update>
+    <select id="selectrefuse" resultType="com.example.ruanjian.beans.SessionBean">
+        select *from session where state="拒绝" and send=#{send}
+    </select>
 </mapper>

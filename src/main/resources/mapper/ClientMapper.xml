@@ -32,7 +32,7 @@
     </select>
 
     <select id="queryUserByunit4" resultType="com.example.ruanjian.beans.ClientBean" parameterType="com.example.ruanjian.beans.Unit">
-        select * from client where unit1 = #{unit1} and unit2 = #{unit2} and unit3 = #{unit3} and unit14 = #{unit14}
+        select * from client where unit1 = #{unit1} and unit2 = #{unit2} and unit3 = #{unit3} and unit4 = #{unit4}
     </select>
 
 </mapper>

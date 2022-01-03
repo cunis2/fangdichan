@@ -20,6 +20,12 @@ public class ClientServiceImpl implements ClientService{
     }
 
     @Override
+    public List<ClientBean> queryUserByunit4(Unit unit) {
+        List<ClientBean> clientBeans = clientMapper.queryUserByunit4(unit);
+        return clientBeans;
+    }
+
+    @Override
     public List<ClientBean> queryUserList() {
         List<ClientBean> list = clientMapper.queryUserList();
         return list;
