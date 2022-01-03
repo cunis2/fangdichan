@@ -1,6 +1,7 @@
 package com.example.ruanjian.controller;
 
 import com.example.ruanjian.beans.EmployeeBean;
+import com.example.ruanjian.beans.Myperform;
 import com.example.ruanjian.beans.PerformBean;
 import com.example.ruanjian.beans.ProjectBean;
 import com.example.ruanjian.service.EmployeeService;
@@ -29,11 +30,42 @@ public class PerformController {
     public String perform(){
         return "performA";
     }
+    @RequestMapping("/myperform")
+    public String myperform(){
+        return "Myperform";
+    }
     @RequestMapping("/updateeva")
     @ResponseBody
     public String evaluateupdate(@RequestBody PerformBean performBean){
             performService.update(performBean);
             return "successful";
+    }
+    @RequestMapping("/Myperform")
+    @ResponseBody
+    public List<Myperform> myperforms(HttpSession session){
+        EmployeeBean user = (EmployeeBean) session.getAttribute("user");
+        int eid = user.getEid();
+        EmployeeBean employeeBean = employeeService.selectByid(eid);
+        Myperform myperform = new Myperform();
+        myperform.seteId(employeeBean.getEid());
+        myperform.setName(employeeBean.getName());
+        myperform.setDepartment(employeeBean.getDepartment());
+        myperform.setType(employeeBean.getType());
+        myperform.setDuty(employeeBean.getDuty());
+        myperform.setEvaluate(employeeBean.getEvaluate());
+        myperform.setBaseMoney(employeeBean.getbMoney());
+        int p = 0;
+        List<PerformBean> list = performService.selectByeid(eid);
+        for (PerformBean performBean :
+                list) {
+            p++;
+        }
+        p=p*1000;
+        myperform.setPerformMoney(p);
+        myperform.setTotalMoney(p+employeeBean.getbMoney());
+        List<Myperform> l = new ArrayList<>();
+        l.add(myperform);
+        return l;
     }
     @RequestMapping("/selectownp")
     @ResponseBody

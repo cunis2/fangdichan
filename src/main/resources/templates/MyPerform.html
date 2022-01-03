@@ -8,12 +8,44 @@
     <script src="/jquery/jquery-3.5.1.js"></script>
 <script>
     $(document).ready(function(){
+         $("#seeMy").click(function () {
+             $.ajax({
+                 url: "/Myperform", //获取数据列
+                 type: 'GET',
+                 success: function (data) {
+                     add(data)
+                 }
+             });
+             function add(data) {
+                 var m={
+                    eId:0,
+                     name:"",
+                     duty:"",
+                     department:"",
+                     type:"",
+                     baseMoney:0.0,
+                     performMoney:0.0,
+                     totalMoney:0.0,
+                     evaluate:""
+                 }
+                 $("#showTable").find("tr").remove()//清空原有表格数据
+                 for(var item in data){
+                     m=data[item];
+                     var flag;
+                     flag=0
+                     var trHTML="<tr><td>"+m.eId+"</td><td>"+m.name+"</td><td>"+m.duty+"</td><td>"+m.department+"</td><td>"+m.type+"</td><td>"+m.baseMoney+"</td><td>"+m.performMoney+"</td><td>"+m.totalMoney+"</td><td>"+m.evaluate+"</td><tr/>";
+                     $("#showTable").append(trHTML); //把trHTML的元素插入到id为showTable里头
+                     console.log(m)
+                 }
+             }
 
+         })
 
     });
 </script>
 </head>
 <body>
+<button id="seeMy" class="layui-btn">刷新我的绩效</button>
 <table class="layui-table">
     <tr>
         <td>工号</td>
@@ -25,7 +57,6 @@
         <td>绩效工资</td>
         <td>总工资</td>
         <td>我的评价</td>
-        <td>操作</td>
     </tr>
     <tbody id="showTable" >
     <tr>
@@ -38,9 +69,6 @@
         <td>8000</td>
         <td>9000</td>
         <td>工作很努力，但不正常</td>
-        <td>
-            <button class="layui-btn layui-btn-primary layui-border-red" >绩效工资详情</button>
-        </td>
     </tr>
     </tbody>
 </table>
