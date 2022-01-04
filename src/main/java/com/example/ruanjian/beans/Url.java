@@ -1,14 +1,22 @@
 package com.example.ruanjian.beans;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Url {
     int pId;
-    String url1;
-    String url2;
-    String url3;
-    String url4;
-    String url5;
-    String url6;
-    String url7;
+    String url1; //JPG
+    String url2;  //模型初期
+    String url3;  //模型后期
+    String url4;  //渲染初期
+    String url5;  //渲染后期
+    String url6;  //后期初期
+    String url7;  //后期最终
+    String url8;//小样
 
     public int getpId() {
         return pId;
@@ -72,5 +80,13 @@ public class Url {
 
     public void setUrl7(String url7) {
         this.url7 = url7;
+    }
+
+    public String getUrl8() {
+        return url8;
+    }
+
+    public void setUrl8(String url8) {
+        this.url8 = url8;
     }
 }

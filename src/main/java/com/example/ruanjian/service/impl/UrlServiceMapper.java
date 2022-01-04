@@ -23,4 +23,10 @@ public class UrlServiceMapper implements UrlService {
         urlMapper.inserturl(url);
         return 1;
     }
+
+    @Override
+    public int updateurl(Url url) {
+        urlMapper.updateurl(url);
+        return  1;
+    }
 }

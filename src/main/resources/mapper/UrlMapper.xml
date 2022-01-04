@@ -6,6 +6,9 @@
         select * from url where pid=#{pId}
     </select>
     <insert id="inserturl" parameterType="com.example.ruanjian.beans.Url">
-        insert into url (pid,url1,url2,url3,url4,url5,url6,url7) values (#{pId},#{url1},#{url2},#{url3},#{url4},#{url5},#{url6},#{url7})
+        insert into url (pid,url1,url2,url3,url4,url5,url6,url7,url8) values (#{pId},#{url1},#{url2},#{url3},#{url4},#{url5},#{url6},#{url7},#{url8})
     </insert>
+    <update id="updateurl" parameterType="com.example.ruanjian.beans.Url">
+        update url set url1=#{url1},url2=#{url2},url3=#{url3},url4=#{url4},url5=#{url5},url6=#{url6},url7=#{url7},url8=#{url8} where pid=#{pId}
+    </update>
 </mapper>

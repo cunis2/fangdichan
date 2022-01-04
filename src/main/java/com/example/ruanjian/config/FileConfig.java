@@ -22,16 +22,16 @@ public class    FileConfig {    //保存文件返回url
         File desFile;
         String oldName = file.getOriginalFilename(); //文件原名
         if (!unit3.equals(""))
-            desFile=new File(staticPath+unit1+"/"+unit2+"/"+unit3);
+            desFile=new File(staticPath+unit1+"/"+unit2+"/"+unit3+"/"+oldName);
         else
-            desFile=new File(staticPath+unit1+"/"+unit2);
+            desFile=new File(staticPath+unit1+"/"+unit2+"/"+oldName);
 
         if(!desFile.getParentFile().exists()){
             desFile.mkdirs();
         }
         try {
-            assert oldName != null;
-            file.transferTo(new File(desFile,oldName));
+
+            file.transferTo(desFile);
         } catch (IOException e) {
             System.out.println("保存失败");
             e.printStackTrace();

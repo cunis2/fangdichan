@@ -1,20 +1,24 @@
 package com.example.ruanjian.controller;
 
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.fastjson.JSONObject;
 import com.example.ruanjian.beans.*;
 import com.example.ruanjian.config.FileConfig;
 import com.example.ruanjian.service.*;
-import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -220,16 +224,6 @@ public class ProjectController {
         apportion.setaState("未分配");
         apportion.setlState("未分配");
         apportionService.insert(apportion);
-        Url url= new Url();
-        url.setpId(projectBean.getpId());
-        url.setUrl1(null);
-        url.setUrl2(null);
-        url.setUrl3(null);
-        url.setUrl4(null);
-        url.setUrl5(null);
-        url.setUrl6(null);
-        url.setUrl7(null);
-        urlService.inserturl(url);
         return "successful";
     }
     @RequestMapping("/selectstate")
@@ -296,32 +290,175 @@ public class ProjectController {
     @ResponseBody
     public String getipid(@RequestBody String pid){
         PID= Integer.parseInt(pid);
+        System.out.println(PID);
         return "successful";
     }
     @RequestMapping(value = "upload" ,method = RequestMethod.POST)
     @ResponseBody
-    public Object  aa(@RequestBody MultipartFile file, HttpServletRequest request)throws UnknownHostException {     //接收前台文件
+    public Object  aa(@RequestBody MultipartFile file, HttpServletRequest request)throws UnknownHostException {     //接收前台资料文件
         ProjectBean bean = projectService.selectByUrl("null");
-        ClientBean clientBean = clientService.queryUserById(bean.getcId());
-        String s = "project"+bean.getpId()+clientBean.getName();
-        String url=FileConfig.saveFileReturnUrl(file,staticPath,s,"中文","c",request);
-        System.out.println("文件路径："+url);
-        bean.setDataUrl(s);
+
+        String s2=""+bean.getpId();//url文件是pid
+        String url2=FileConfig.saveFileReturnUrl(file,staticPath,s2,"Data","",request);//保存到数据库的url
+        Url url = new Url();
+        url.setpId(bean.getpId());
+        urlService.inserturl(url);
+        bean.setDataUrl(url2);
+        System.out.println("文件路径："+url2);
         projectService.updateProject(bean);
         JSONObject resObj = new JSONObject();
         resObj.put("msg","ok");
         return resObj;
     }
-    @RequestMapping(value = "eupload" ,method = RequestMethod.POST)
+    @RequestMapping(value = "uploadEmployeeFilesA" ,method = RequestMethod.POST)     //上传初期文件
     @ResponseBody
     public Object  aaa(@RequestBody MultipartFile file, HttpServletRequest request,HttpSession session)throws UnknownHostException {     //接收前台文件
         ProjectBean projectBean = projectService.selectProjectByPid(PID);
-        String s = projectBean.getDataUrl();
         EmployeeBean user = (EmployeeBean) session.getAttribute("user");
         String department = user.getDepartment();
-        String url=FileConfig.saveFileReturnUrl(file,staticPath,s,department,"原始文件",request);
+        String unit2Name = "";
+
+
+        if(department.equals("模型部门"))
+        {
+            unit2Name="model";
+
+
+        }
+        else if(department.equals("渲染部门"))
+        {
+            unit2Name="rend";
+
+
+        }
+        else if(department.equals("后期部门"))
+        {
+             unit2Name="latter";
+
+
+        }
+        String s=Integer.toString(PID);
+        String url=FileConfig.saveFileReturnUrl(file,staticPath,s,unit2Name,"RawData",request); //url访问的
+
+
+
+        System.out.println("访问路径"+url);
+        Url u = urlService.selectbyid(projectBean.getpId());
+        if(department.equals("模型部门"))
+        {
+            u.setUrl2(url);
+        }
+        else if(department.equals("渲染部门"))
+        {
+            u.setUrl4(url);
+        }
+        else if(department.equals("后期部门"))
+        {
+            u.setUrl6(url);
+        }
+        urlService.updateurl(u);                                          //这里需要把url保存到url表里面！！!对应的初期文件url
+        System.out.println(u);
         JSONObject resObj = new JSONObject();
         resObj.put("msg","ok");
         return resObj;
     }
+    @RequestMapping(value = "uploadEmployeeFilesB" ,method = RequestMethod.POST) //上传最终文件
+    @ResponseBody
+    public Object  sadda(@RequestBody MultipartFile file, HttpServletRequest request,HttpSession session) throws UnknownHostException{
+        ProjectBean projectBean = projectService.selectProjectByPid(PID);
+        EmployeeBean user = (EmployeeBean) session.getAttribute("user");
+        String department = user.getDepartment();
+        String unit2Name = "";
+
+
+        if(department.equals("模型部门"))
+        {
+            unit2Name="model";
+
+
+        }
+        else if(department.equals("渲染部门"))
+        {
+            unit2Name="rend";
+
+
+        }
+        else if(department.equals("后期部门"))
+        {
+            unit2Name="latter";
+
+
+        }
+        String s=Integer.toString(PID);
+        String url=FileConfig.saveFileReturnUrl(file,staticPath,s,unit2Name,"FinalData",request); //url访问的
+
+        System.out.println("访问路径"+url);
+        Url u = urlService.selectbyid(projectBean.getpId());
+        if(department.equals("模型部门"))
+        {
+            u.setUrl3(url);
+
+        }
+        else if(department.equals("渲染部门"))
+        {
+            u.setUrl5(url);
+
+        }
+        else if(department.equals("后期部门"))
+        {
+            u.setUrl7(url);
+
+        }                                        //这里需要把url保存到url表里面！！！对应的最终文件url
+        urlService.updateurl(u);
+
+        JSONObject resObj = new JSONObject();
+        resObj.put("msg", "ok");
+        return resObj;
+    }
+    @RequestMapping(value = "uploadEmployeeFilesXY" ,method = RequestMethod.POST)  //上传小样
+    @ResponseBody
+    public Object  saddda(@RequestBody MultipartFile file, HttpServletRequest request,HttpSession session) throws UnknownHostException{
+        ProjectBean projectBean = projectService.selectProjectByPid(PID);
+
+
+        String s=Integer.toString(PID);
+
+        String url=FileConfig.saveFileReturnUrl(file,staticPath,s,"Sample","",request);//访问的url
+        Url u = urlService.selectbyid(projectBean.getpId());
+        u.setUrl8(url);
+        urlService.updateurl(u);
+                                                //url保存到数据库，是小样的url
+        System.out.println("访问"+url);
+        JSONObject resObj = new JSONObject();
+        resObj.put("msg", "ok");
+        return resObj;
+    }
+
+    @RequestMapping(value = "uploadEmployeeFilesJPG" ,method = RequestMethod.POST)  //上传jpg
+    @ResponseBody
+    public Object  sddaa(@RequestBody MultipartFile file, HttpServletRequest request  ) throws UnknownHostException{
+        ProjectBean projectBean = projectService.selectProjectByPid(PID);
+
+        String s=Integer.toString(PID);
+        String url=FileConfig.saveFileReturnUrl(file,staticPath,s,"JPG","",request);//访问的url
+        Url u = urlService.selectbyid(projectBean.getpId());
+        u.setUrl1(url);
+        urlService.updateurl(u);
+        System.out.println("访问"+url);
+        JSONObject resObj = new JSONObject();
+        resObj.put("msg", "ok");
+        return resObj;
+    }
+    @RequestMapping(value = "getAllProjectData" ,method = RequestMethod.POST)  //根据项目编号获取url对象
+    @ResponseBody
+  public List<Url> fdsfds(@RequestBody String pId){
+
+        System.out.println(pId);
+        List<Url> urls=new LinkedList<>();
+        Url selectByid = urlService.selectbyid(Integer.parseInt(pId));
+        urls.add(selectByid);
+        return urls;
+    }
+
+
 }

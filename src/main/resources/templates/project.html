@@ -84,7 +84,7 @@
             else
               flag=0
             var trHTML="<tr><td>"+m.pName+"</td><td>"+m.pId+"</td><td>"+m.cId+"</td><td>"+m.dataUrl+"</td><td>"+m.state+"</td><td>"+m.price+"</td><td>"+m.mPrinciple+"</td><td>"+m.aPrinciple+"</td><td>"+m.lPrinciple+"</td><td>"+m.bTime+"</td><td>"+m.eTime+"</td><td>"+m.type+"</td><td><div><div><label>"+flag+"%</label></div><progress value= '"+flag+"'  max= '100' ></progress></div>" +
-                    "</td><td><a href='"+m.dataUrl+"' download='test' class=\"layui-btn\">下载项目</a><button onclick='uploadEmployeeFile(this)' class=\"layui-btn layui-btn-warm\">上传项目</button><button class=\"layui-btn layui-btn-primary layui-border-red\"  onclick='suggestionPro(this)'>客户建议</button></td><tr/>";
+                    "</td><td><a href='"+m.dataUrl+"' download='test' class=\"layui-btn\">下载项目</a><button onclick='uploadEmployeeFile(this)' class=\"layui-btn layui-btn-warm\">上传项目</button><button class=\"layui-btn layui-btn-primary layui-border-red\"  onclick='downloadOthers(this)'>下载其他</button><button class=\"layui-btn layui-btn-primary layui-border-red\"  onclick='suggestionPro(this)'>客户建议</button></td><tr/>";
             $("#showTable").append(trHTML); //把trHTML的元素插入到id为showTable里头
             console.log(m)
           }
@@ -182,7 +182,7 @@
             layer.closeAll();
           },
           btn2: function(index, layero){
-            alert("2222");
+
             return false;
           },
           cancel: function(layero,index){
@@ -285,8 +285,7 @@
           }
           $("#showTable").find("tr").remove()//清空原有表格数据
           for(var item in data){
-            var list_item=data[item];
-            m=list_item;
+            m=data[item];
             var flag;
             if (m.state==="建模中")
               flag=30
@@ -468,8 +467,25 @@
     </div>
   </div>
 </form>
-<button id="test1" style="display: none" class="layui-btn test" lay-data="{url: '/upload/',accept: 'file'}">上传文件</button>
-<button id="test2" style="display: none" class="layui-btn test" lay-data="{url: '/uploadEmployeeFiles/', accept: 'file'}">上传文件</button>
+
+
+<div id="toSelectUpload" style="display: none">
+  <div>
+    <button id="test5"  class="layui-btn test" lay-data="{url: '/uploadEmployeeFilesJPG/', accept: 'file'}">上传JPG文件</button>
+  </div>
+  <div>
+    <button id="test4"  class="layui-btn layui-border-black test" lay-data="{url: '/uploadEmployeeFilesXY/', accept: 'file'}">上传小样文件</button>
+  </div>
+  <div>
+    <button id="test2"  class="layui-btn layui-btn-warm test" lay-data="{url: '/uploadEmployeeFilesA/', accept: 'file'}">上传初期文件</button>
+  </div>
+  <div>
+    <button id="test3"  class="layui-btn layui-btn-danger test" lay-data="{url: '/uploadEmployeeFilesB/', accept: 'file'}">上传最终文件</button>
+  </div>
+</div>
+
+<button id="test1" style="display: none" class="layui-btn test" lay-data="{url: '/upload/',accept: 'file'}">上传资料文件</button>
+
 <div id="getSession" style="display:none">
   [[${session.user}]]
 </div>
@@ -493,6 +509,25 @@
     </div>
   </div>
 </form>
+<div id="downloadOtherObject" style="display: none">
+  <div>
+    <a id="a" class="layui-btn" href="" download="test">下载JPG</a>
+    <a id="h" class="layui-btn" href="" download="test">下载小样</a>
+  </div>
+   <div>
+     <a id="b" class="layui-btn" href="" download="test">下载模型初期文件</a>
+     <a id="c" class="layui-btn" href="" download="test">下载模型最终文件</a>
+   </div>
+  <div>
+    <a  id="d" class="layui-btn" href="" download="test">下载渲染初期文件</a>
+    <a id="e" class="layui-btn" href="" download="test">下载渲染最终文件</a>
+  </div>
+ <div>
+   <a id="f" class="layui-btn" href="" download="test">下载后期最初文件</a>
+   <a id="g" class="layui-btn" href="" download="test">下载后期最终文件</a>
+ </div>
+</div>
+
 <script src="/layui/layui.js"></script>
 <script>
   var duty=$("#duty").text();
@@ -850,9 +885,9 @@
     });
     layer.open({
       type:1,
-      area:['300px','200px'],
+      area:['500px','400px'],
       title: '文件',
-      content: $("#test2"),
+      content: $("#toSelectUpload"),
       shade: 0,
       btn: ['关闭']
       ,btn1: function(index, layero){
@@ -943,6 +978,59 @@
         alert(textStatus);
       }
     });
+  }
+  function downloadOthers($this) {//下载其他
+    var m=$($this).parent().parent().find("td").eq(1).text(); //把当前行的第1个属性值得到，及项目号
+    $.ajax({
+      type: "post",
+      url: "/getAllProjectData",      //获取该项目的url对象
+      dataType: "text",
+      contentType: "application/text; charset=utf-8",
+      data: m,            //m是项目号
+      success:function(result){
+        var m=JSON.parse(result);
+       var urlData={
+         pId:0,
+         url1:"",
+         url2:"",
+         url3:"",
+         url4:"",
+         url5:"",
+         url6:"",
+         url7:"",
+         url8:"",
+       }
+        urlData=m[0];
+       $("#a").attr('href',urlData.url1);
+        $("#b").attr('href',urlData.url2);
+        $("#c").attr('href',urlData.url3);
+        $("#d").attr('href',urlData.url4);
+        $("#e").attr('href',urlData.url5);
+        $("#f").attr('href',urlData.url6);
+        $("#g").attr('href',urlData.url7);
+        $("#h").attr('href',urlData.url8);
+        console.log(urlData)
+       toOpenDownload();
+      }
+    });
+    function toOpenDownload() {
+      layer.open({
+        type:1,
+        area:['500px','400px'],
+        title: '项目文件下载',
+        content: $("#downloadOtherObject"),
+        shade: 0,
+        btn: ['关闭']
+        ,btn1: function(index, layero){
+          layer.closeAll();
+        },
+        cancel: function(layero,index){
+          layer.closeAll();
+        }
+
+      });
+
+    }
   }
 </script>
 </body>
